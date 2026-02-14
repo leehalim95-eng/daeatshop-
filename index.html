@@ -1,0 +1,3033 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<base href="http://daeatshop.com/">
+	<meta name="viewport" content="user-scalable=yes, width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+	<!-- Firebase SDK (compat for non-module usage) -->
+	<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+		rel="stylesheet">
+	<style>
+		/* Scroll Reveal Animation */
+		.product-item .card-img-top,
+		.product-item .card-body h2,
+		.product-item .card-body .card-text:not(.small),
+		.product-item .card-body .card-text.small {
+			opacity: 0;
+			transform: translateY(30px);
+			transition: all 0.6s ease-out;
+		}
+
+		.product-item.active .card-img-top {
+			opacity: 1;
+			transform: translateY(0);
+			transition-delay: 0s;
+		}
+
+		.product-item.active .card-body h2,
+		.product-item.active .card-body .card-text:not(.small) {
+			opacity: 1;
+			transform: translateY(0);
+			transition-delay: 0.2s;
+		}
+
+		.product-item.active .card-body .card-text.small {
+			opacity: 1;
+			transform: translateY(0);
+			transition-delay: 0.4s;
+		}
+
+		#viewToggleBtn {
+			cursor: pointer;
+		}
+
+		/* --- Global Reset & Common Styles --- */
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: 'Inter', 'Noto Sans KR', 'Noto Sans SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			background-color: #f5f5f5;
+			min-height: 100vh;
+			margin: 0;
+			line-height: 1.6;
+		}
+
+		img {
+			max-width: 100%;
+			height: auto;
+			display: block;
+		}
+
+		/* Content Wrapper */
+		.wrapper {
+			width: 100%;
+			margin: 0 auto;
+			padding: 0 15px;
+		}
+
+		/* Helper for text safety */
+		.text-truncate-multiline {
+			display: block;
+			display: -webkit-box;
+			-webkit-line-clamp: 2;
+			-webkit-box-orient: vertical;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			height: auto;
+		}
+
+		/* Product Card Styles */
+		.product-card {
+			background: #fff;
+			border-radius: 8px;
+			overflow: hidden;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			transition: transform 0.2s, box-shadow 0.2s;
+		}
+
+		.product-card:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+		}
+
+		.card-body {
+			padding: 1.5rem;
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+		}
+
+		/* --- MOBILE LAYOUT (Default / < 992px) --- */
+		@media (max-width: 991px) {
+			.wrapper {
+				max-width: 100%;
+				padding-bottom: 140px;
+				/* Space for fixed bottom bar */
+			}
+
+			/* --- Mobile Header --- */
+			/* Keep it simple, leverage Bootstrap structure but override colors for consistency if needed */
+			.navbar {
+				padding: 10px 15px;
+				background-color: #fff;
+				/* Mobile keeps white or user preference? User said "PC... purple". adhering to PC specific. Mobile kept simple. */
+				box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+			}
+
+			.navbar-brand {
+				font-size: 1.2rem;
+				font-weight: bold;
+				color: #333;
+			}
+
+			/* Hamburger color */
+			.navbar-toggler {
+				border-color: transparent;
+			}
+
+			.navbar-toggler-icon {
+				background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(0, 0, 0, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+			}
+
+			.navbar-nav {
+				margin-top: 10px;
+				background: #fff;
+				padding: 10px;
+				border-radius: 5px;
+			}
+
+			.nav-item {
+				border-bottom: 1px solid #eee;
+			}
+
+			.nav-item:last-child {
+				border-bottom: none;
+			}
+
+			.nav-link {
+				color: #333;
+				padding: 10px 0;
+			}
+
+			/* Mobile Grid: 1 Item Per Row */
+			#productRow {
+				display: flex;
+				flex-direction: column;
+				gap: 20px;
+			}
+
+			.product-item {
+				width: 100%;
+			}
+
+			/* Mobile Fixed Bottom Bar */
+			.fixed-bottom-bar {
+				position: fixed;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				z-index: 1030;
+				background-color: #2E1A47;
+				padding: 10px 15px;
+				box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+			}
+
+			/* Mobile Bottom Bar Internal Layout */
+			#buyGoods {
+				width: 100%;
+				display: flex;
+				flex-direction: column;
+			}
+
+			.product-select-group {
+				width: 100%;
+				display: flex;
+				justify-content: space-between;
+				margin-bottom: 5px;
+				flex-wrap: wrap;
+			}
+
+			.price-action-group {
+				width: 100%;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+
+			.product-select {
+				width: 100%;
+				margin-bottom: 5px;
+			}
+
+			.option-select {
+				width: 68%;
+				margin-right: 2%;
+			}
+
+			.count-select {
+				width: 30%;
+			}
+
+			.price-display {
+				width: 40%;
+			}
+
+			.action-buttons {
+				width: 58%;
+				display: flex;
+				justify-content: space-between;
+				gap: 5px;
+			}
+
+			#viewPrice {
+				background: transparent !important;
+				color: #fff;
+				border: none;
+				font-weight: bold;
+				text-align: left;
+				padding: 0;
+				width: 100%;
+			}
+
+			#AddCart,
+			#BuyNow {
+				flex: 1;
+				height: 40px;
+				font-size: 0.9rem;
+				border: none;
+				border-radius: 4px;
+			}
+
+			#AddCart {
+				background-color: #5a3d7a;
+				color: white;
+			}
+
+			#BuyNow {
+				background-color: #fff;
+				color: #2E1A47;
+			}
+
+			.fixed-bottom-bar select {
+				height: 40px;
+				font-size: 0.9rem;
+				width: 100%;
+			}
+		}
+
+		/* --- PC LAYOUT (>= 992px) --- */
+		@media (min-width: 992px) {
+			.wrapper {
+				max-width: 1200px;
+				/* Strict 1200px */
+			}
+
+			/* --- PC Header Design (User Requested) --- */
+			.navbar {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				position: sticky;
+				top: 0;
+				z-index: 1000;
+				background-color: rgba(90, 61, 122, 0.95);
+				/* Semi-transparent Purple */
+				padding: 15px 30px;
+				box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+				border-radius: 0 0 8px 8px;
+				/* Slight curve on bottom */
+			}
+
+			.navbar .container {
+				max-width: 100%;
+				padding: 0;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+
+			.navbar-brand {
+				font-size: 1.5rem;
+				font-weight: bold;
+				color: #fff !important;
+				/* White text */
+			}
+
+			/* Menu Items */
+			.navbar-collapse {
+				flex-grow: 0;
+				/* Don't expand to fill */
+			}
+
+			.navbar-nav {
+				display: flex;
+				flex-direction: row;
+				gap: 20px;
+				/* Gap between items */
+				margin: 0;
+				padding: 0;
+			}
+
+			.nav-item {
+				list-style: none;
+			}
+
+			.nav-link {
+				color: rgba(255, 255, 255, 0.9) !important;
+				font-weight: 500;
+				white-space: nowrap;
+				/* Prevent line break */
+				transition: color 0.2s;
+				font-size: 1rem;
+			}
+
+			.nav-link:hover {
+				color: #fff !important;
+				opacity: 1;
+			}
+
+			/* Strict Grid System */
+			#productRow {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 20px;
+				/* Modern gap */
+				margin: 0;
+				/* Remove negative margins from row */
+			}
+
+			.product-item {
+				/* Calc width for 2 items per row with gap */
+				/* width = (100% - gap) / 2 */
+				width: calc(50% - 10px);
+				flex: 0 0 auto;
+				margin-bottom: 20px;
+			}
+
+			/* Vertical Card Layout for PC (User Request) */
+			.product-item .card {
+				flex-direction: column;
+				/* Stack vertically */
+				height: 100%;
+			}
+
+			.product-item .card-img-top {
+				width: 100%;
+				height: auto;
+				object-fit: contain;
+				background: #f9f9f9;
+				padding: 10px;
+				max-height: 400px;
+				/* Reasonable limit for vertical layout */
+			}
+
+			.product-item .card-body {
+				width: 100%;
+				padding: 2rem;
+				display: flex;
+				flex-direction: column;
+			}
+
+			/* Text Safety & Spacing */
+			.card-body h2,
+			.card-body h3,
+			.card-body p,
+			.card-body .card-text {
+				height: auto;
+				min-height: auto;
+				margin-bottom: 20px;
+				/* Spacer as requested */
+			}
+
+			.card-body *:last-child {
+				margin-bottom: 0;
+			}
+
+			/* Hide legacy elements */
+			#viewToggleBtn,
+			#toggleText,
+			#toggleIcon {
+				display: none !important;
+			}
+
+			/* PC Bottom Purchase Bar - Static Flow */
+			.fixed-bottom-bar {
+				position: relative;
+				width: 100%;
+				background-color: #f8f9fa;
+				border-top: 2px solid #2E1A47;
+				padding: 20px 30px;
+				margin-top: 50px;
+				border-radius: 8px;
+			}
+
+			#buyGoods {
+				display: flex;
+				flex-wrap: nowrap;
+				align-items: center;
+				justify-content: space-between;
+				max-width: 100%;
+			}
+
+			.product-select-group {
+				display: flex;
+				flex: 1;
+				align-items: center;
+				gap: 10px;
+				margin-right: 20px;
+			}
+
+			.price-action-group {
+				display: flex;
+				align-items: center;
+				gap: 20px;
+			}
+
+			.product-select {
+				flex: 2;
+			}
+
+			.option-select {
+				flex: 1.5;
+			}
+
+			.count-select {
+				flex: 0.5;
+				min-width: 60px;
+			}
+
+			.price-display {
+				min-width: 100px;
+				text-align: right;
+			}
+
+			#viewPrice {
+				background: transparent !important;
+				border: none;
+				font-weight: bold;
+				font-size: 1.5rem;
+				text-align: right;
+				color: #333;
+				width: 100%;
+			}
+
+			.action-buttons {
+				display: flex;
+				gap: 10px;
+			}
+
+			.action-buttons button {
+				width: 140px;
+				height: 50px;
+				border-radius: 5px;
+				font-weight: bold;
+				font-size: 1rem;
+				cursor: pointer;
+			}
+
+			#AddCart {
+				background-color: #2E1A47;
+				color: white;
+				border: none;
+			}
+
+			#BuyNow {
+				background-color: #fff;
+				border: 2px solid #2E1A47;
+				color: #2E1A47;
+			}
+
+			.fixed-bottom-bar select {
+				height: 50px;
+				border: 1px solid #ddd;
+			}
+		}
+	</style>
+	</style>
+
+	<script>
+		$(document).ready(function () {
+
+			// 상품목록 DB 설정
+			var mainCategoryArray = new Array();
+			var mainCategoryObject = new Object();
+			var subCategoryArray = new Array();
+			var subCategoryObject = new Object();
+			var checkFirst = 0;
+			var buyStep = "begin";
+
+			// <!-- 하단 상품목록 및 상품옵션 셀렉트 박스 데이터 정리
+
+			mainCategoryObject = new Object();
+			mainCategoryObject.main_category_id = "G2025081200001";
+			mainCategoryObject.main_category_name = "Sahyang Gongjindan";
+			mainCategoryArray.push(mainCategoryObject);
+
+			mainCategoryObject = new Object();
+			mainCategoryObject.main_category_id = "G2025081200002";
+			mainCategoryObject.main_category_name = "Mokhyang Gongjindan";
+			mainCategoryArray.push(mainCategoryObject);
+
+			mainCategoryObject = new Object();
+			mainCategoryObject.main_category_id = "G2025082800001";
+			mainCategoryObject.main_category_name = "Kyungokgo";
+			mainCategoryArray.push(mainCategoryObject);
+
+			mainCategoryObject = new Object();
+			mainCategoryObject.main_category_id = "G2025082800002";
+			mainCategoryObject.main_category_name = "Woongdambulchidan";
+			mainCategoryArray.push(mainCategoryObject);
+
+			mainCategoryObject = new Object();
+			mainCategoryObject.main_category_id = "G2025082800003";
+			mainCategoryObject.main_category_name = "3-Day Detox Program";
+			mainCategoryArray.push(mainCategoryObject);
+
+			mainCategoryObject = new Object();
+			mainCategoryObject.main_category_id = "G2025082800004";
+			mainCategoryObject.main_category_name = "DAEAT S7 BOOSTER PLUS";
+			mainCategoryArray.push(mainCategoryObject);
+
+			mainCategoryObject = new Object();
+			mainCategoryObject.main_category_id = "G2025082800005";
+			mainCategoryObject.main_category_name = "DAEAT ENZYME";
+			mainCategoryArray.push(mainCategoryObject);
+
+			mainCategoryObject = new Object();
+			mainCategoryObject.main_category_id = "G2025082800006";
+			mainCategoryObject.main_category_name = "DAEAT MCT OIL";
+			mainCategoryArray.push(mainCategoryObject);
+
+			subCategoryObject = new Object();
+			subCategoryObject.main_category_id = "G2025081200001";
+			subCategoryObject.sub_category_id = "G2025082800007";
+			subCategoryObject.sub_category_name = "10";
+			subCategoryObject.sub_category_price = "460000";
+			subCategoryArray.push(subCategoryObject);
+
+			subCategoryObject = new Object();
+			subCategoryObject.main_category_id = "G2025081200001";
+			subCategoryObject.sub_category_id = "G2025082800008";
+			subCategoryObject.sub_category_name = "30";
+			subCategoryObject.sub_category_price = "1400000";
+			subCategoryArray.push(subCategoryObject);
+
+			subCategoryObject = new Object();
+			subCategoryObject.main_category_id = "G2025081200002";
+			subCategoryObject.sub_category_id = "G2025082800011";
+			subCategoryObject.sub_category_name = "10";
+			subCategoryObject.sub_category_price = "330000";
+			subCategoryArray.push(subCategoryObject);
+
+			subCategoryObject = new Object();
+			subCategoryObject.main_category_id = "G2025081200002";
+			subCategoryObject.sub_category_id = "G2025082800012";
+			subCategoryObject.sub_category_name = "30";
+			subCategoryObject.sub_category_price = "1000000";
+			subCategoryArray.push(subCategoryObject);
+
+			subCategoryObject = new Object();
+			subCategoryObject.main_category_id = "G2025082800001";
+			subCategoryObject.sub_category_id = "G2025082800015";
+			subCategoryObject.sub_category_name = "1 Box";
+			subCategoryObject.sub_category_price = "330000";
+			subCategoryArray.push(subCategoryObject);
+
+			subCategoryObject = new Object();
+			subCategoryObject.main_category_id = "G2025082800002";
+			subCategoryObject.sub_category_id = "G2025082800016";
+			subCategoryObject.sub_category_name = "3 Month";
+			subCategoryObject.sub_category_price = "450000";
+			subCategoryArray.push(subCategoryObject);
+
+			subCategoryObject = new Object();
+			subCategoryObject.main_category_id = "G2025082800003";
+			subCategoryObject.sub_category_id = "G2025082800017";
+			subCategoryObject.sub_category_name = "1 Box";
+			subCategoryObject.sub_category_price = "400000";
+			subCategoryArray.push(subCategoryObject);
+
+			subCategoryObject = new Object();
+			subCategoryObject.main_category_id = "G2025082800004";
+			subCategoryObject.sub_category_id = "G2025082800018";
+			subCategoryObject.sub_category_name = "3 Month";
+			subCategoryObject.sub_category_price = "450000";
+			subCategoryArray.push(subCategoryObject);
+
+			subCategoryObject = new Object();
+			subCategoryObject.main_category_id = "G2025082800005";
+			subCategoryObject.sub_category_id = "G2025082800019";
+			subCategoryObject.sub_category_name = "3 Month";
+			subCategoryObject.sub_category_price = "200000";
+			subCategoryArray.push(subCategoryObject);
+
+			subCategoryObject = new Object();
+			subCategoryObject.main_category_id = "G2025082800006";
+			subCategoryObject.sub_category_id = "G2025082800020";
+			subCategoryObject.sub_category_name = "3 Month";
+			subCategoryObject.sub_category_price = "240000";
+			subCategoryArray.push(subCategoryObject);
+
+			subCategoryObject = new Object();
+			subCategoryObject.main_category_id = "G2025082800006";
+			subCategoryObject.sub_category_id = "G2025083100001";
+			subCategoryObject.sub_category_name = "6 Month";
+			subCategoryObject.sub_category_price = "410000";
+			subCategoryArray.push(subCategoryObject);
+
+			subCategoryObject = new Object();
+			subCategoryObject.main_category_id = "G2025082800005";
+			subCategoryObject.sub_category_id = "G2025083100002";
+			subCategoryObject.sub_category_name = "6 Month";
+			subCategoryObject.sub_category_price = "340000";
+			subCategoryArray.push(subCategoryObject);
+
+			subCategoryObject = new Object();
+			subCategoryObject.main_category_id = "G2025082800004";
+			subCategoryObject.sub_category_id = "G2025083100003";
+			subCategoryObject.sub_category_name = "6 Month";
+			subCategoryObject.sub_category_price = "820000";
+			subCategoryArray.push(subCategoryObject);
+
+			subCategoryObject = new Object();
+			subCategoryObject.main_category_id = "G2025082800002";
+			subCategoryObject.sub_category_id = "G2025083100004";
+			subCategoryObject.sub_category_name = "6 Month";
+			subCategoryObject.sub_category_price = "820000";
+			subCategoryArray.push(subCategoryObject);
+
+			// 하단 상품목록 및 상품옵션 셀렉트 박스 데이터 정리 끝 -->
+
+			// <!-- 초기 상품목록 셀렉트 박스 설정
+			var goodsListSelectBox = $("select[name='goodsList']");
+			for (var i = 0; i < mainCategoryArray.length; i++) {
+				goodsListSelectBox.append("<option value='" + mainCategoryArray[i].main_category_id + "' id='" + mainCategoryArray[i].main_category_id + "'>" + mainCategoryArray[i].main_category_name + "</option>");
+			}
+			// 초기 상품목록 셀렉트 박스 설정 끝 -->
+
+			// <!--초기 상품옵션 셀렉트 박스 설정
+			var subCategorySelectBox = $("select[name='goodsOption']");
+			for (var i = 0; i < subCategoryArray.length; i++) {
+				if (mainCategoryArray[0].main_category_id == subCategoryArray[i].main_category_id) {
+					subCategorySelectBox.append("<option value='" + subCategoryArray[i].sub_category_id + "' id='" + subCategoryArray[i].sub_category_id + "'>" + subCategoryArray[i].sub_category_name + "</option>");
+					if (checkFirst == 0) {
+						changePrice(subCategoryArray[i].sub_category_price);
+						checkFirst++;
+					}
+				}
+			}
+			// 초기 상품옵션 셀렉트 박스 설정 끝 -->
+
+			// 페이지 스크롤 스파이 정의
+			$('body').scrollspy({ target: ".navbar", offset: 50 });
+
+			// <!-- 화면 스크롤 위치값에 따른 셀렉트 박스 값 변화
+			$(window).scroll(function () {
+				var nowGoods = "";
+				var scrollBottom = $('body').height() - $(window).height() - $(window).scrollTop();
+				var scrollTop = $(window).scrollTop();
+
+				var goods1 = $('#G2025081200001').position().top;
+
+				var goods2 = $('#G2025081200002').position().top;
+
+				var goods3 = $('#G2025082800001').position().top;
+
+				var goods4 = $('#G2025082800002').position().top;
+
+				var goods5 = $('#G2025082800003').position().top;
+
+				var goods6 = $('#G2025082800004').position().top;
+
+				var goods7 = $('#G2025082800005').position().top;
+
+				var goods8 = $('#G2025082800006').position().top;
+
+				if (scrollTop < goods2 && scrollTop >= goods1 && nowGoods != "goods1") {
+					$("#goodsList").val("G2025081200001");
+					subSelectBoxChange("G2025081200001");
+					nowGoods = "goods1";
+				}
+
+				if (scrollTop < goods3 && scrollTop >= goods2 && nowGoods != "goods2") {
+					$("#goodsList").val("G2025081200002");
+					subSelectBoxChange("G2025081200002");
+					nowGoods = "goods2";
+				}
+
+				if (scrollTop < goods4 && scrollTop >= goods3 && nowGoods != "goods3") {
+					$("#goodsList").val("G2025082800001");
+					subSelectBoxChange("G2025082800001");
+					nowGoods = "goods3";
+				}
+
+				if (scrollTop < goods5 && scrollTop >= goods4 && nowGoods != "goods4") {
+					$("#goodsList").val("G2025082800002");
+					subSelectBoxChange("G2025082800002");
+					nowGoods = "goods4";
+				}
+
+				if (scrollTop < goods6 && scrollTop >= goods5 && nowGoods != "goods5") {
+					$("#goodsList").val("G2025082800003");
+					subSelectBoxChange("G2025082800003");
+					nowGoods = "goods5";
+				}
+
+				if (scrollTop < goods7 && scrollTop >= goods6 && nowGoods != "goods6") {
+					$("#goodsList").val("G2025082800004");
+					subSelectBoxChange("G2025082800004");
+					nowGoods = "goods6";
+				}
+
+				if (scrollTop < goods8 && scrollTop >= goods7 && nowGoods != "goods7") {
+					$("#goodsList").val("G2025082800005");
+					subSelectBoxChange("G2025082800005");
+					nowGoods = "goods7";
+				}
+
+				if (scrollTop >= goods8 && nowGoods != "goods8") {
+					$("#goodsList").val("G2025082800006");
+					subSelectBoxChange("G2025082800006");
+					nowGoods = "goods8";
+				}
+
+
+			});
+			// 화면 스크롤 위치값에 따른 셀렉트 박스 값 변화 끝 -->
+
+			// <!-- 상단 상품 카테고리 클릭에 따른 화면 이동
+			$(".nav-link").on('click', function (event) {
+				if (this.hash !== "") {
+					event.preventDefault();
+					var hash = this.hash;
+					$('html, body').animate({
+						scrollTop: $(hash).offset().top
+					}, 100);
+					//			subSelectBoxChange(hash.substr(1));
+				}
+			});
+
+			// 상단 상품 카테고리 클릭에 따른 화면 이동 끝 -->
+
+			// <!-- 상품 목록 셀렉트 박스 선택 시 관련 상품화면으로 이동
+			$('#goodsList').change(function () {
+				var selectValue = "";
+				$("option:selected", this).each(function () {
+					selectValue = $(this).val();
+				});
+				var offset = $("#" + selectValue).offset();
+				$('html').animate({ scrollTop: offset.top }, 100);
+				subSelectBoxChange(selectValue);
+			});
+			// 상품 목록 셀렉트 박스 선택 시 관련 상품화면으로 이동 끝 -->
+
+			// <!-- 상품 옵션 셀렉트 박스 선택 시 상품 가격 변동
+			$('#goodsOption').change(function () {
+				var selectValue = "";
+				$("option:selected", this).each(function () {
+					selectValue = $(this).val(); //main category 에서 선택한 값
+				});
+				for (var i = 0; i < subCategoryArray.length; i++) {
+					if (selectValue == subCategoryArray[i].sub_category_id) {
+						changePrice(subCategoryArray[i].sub_category_price);
+					}
+				}
+			});
+			// 상품 옵션 셀렉트 박스 선택 시 상품 가격 변동 끝 -->
+			/* 
+				// <!-- 하단 +- 버튼 클릭 시 1~99 사이의 값으로 수량 변경 로직
+				const decrementButton = document.getElementById('decrement');
+				const incrementButton = document.getElementById('increment');
+				const numberInput = document.getElementById('goodsCnt');
+				let number = parseInt(numberInput.value);
+				decrementButton.addEventListener('click', () => {
+					if (number > 1) {
+						number--;
+						numberInput.value = number;
+					}
+				});
+				incrementButton.addEventListener('click', () => {
+					if (number < 9) {
+						number++;
+						numberInput.value = number;
+					}
+				});
+				// 하단 +- 버튼 클릭 시 1~99 사이의 값으로 수량 변경 로직 끝 -->
+			 */
+			// <!-- 페이지 상단 장바구니 클릭 시 장바구니 목록 modal 띄움
+			$("#cartList").click(function () {
+				$.ajax({
+					url: "cart.jsp",
+					method: "POST",
+					success: function (data) {
+						if (data > 100) {
+							alert("Session TimeOut.");
+							location.reload();
+						} else {
+							$('#cartBody').html(data); // 태그 id가 employee_detail인 태그에 출력
+							$("#cartModal").modal({ backdrop: "static" });
+							$('#cartModal').modal('show'); // modal창 출력
+						}
+					}
+				});
+			});
+
+			$("#cartList2").click(function () {
+				if (parseInt($("#cartCnt2").html()) > 0) {
+					$.ajax({
+						url: "cart.jsp",
+						method: "POST",
+						success: function (data) {
+							if (data > 100) {
+								alert("Session TimeOut.");
+								location.reload();
+							} else {
+								$('#cartBody').html(data); // 태그 id가 employee_detail인 태그에 출력
+								$("#cartModal").modal({ backdrop: "static" });
+								$('#cartModal').modal('show'); // modal창 출력
+							}
+						}
+					});
+				} else {
+					alert("장바구니에 등록된 상품이 없습니다.");
+				}
+
+			});
+
+			$("#cartList3").click(function () {
+				$("#successModal").modal('hide');
+				$.ajax({
+					url: "cart.jsp",
+					method: "POST",
+					success: function (data) {
+						if (data > 100) {
+							alert("Session TimeOut.");
+							location.reload();
+						} else {
+							$('#cartBody').html(data); // 태그 id가 employee_detail인 태그에 출력
+							$("#cartModal").modal({ backdrop: "static" });
+							$('#cartModal').modal('show'); // modal창 출력
+						}
+					}
+				});
+			});
+
+
+			// 페이지 상단 장바구니 클릭 시 장바구니 목록 modal 띄움 끝 -->
+
+			// <!-- 장바구니에서 BUY 버튼 클릭 시 장바구니 modal을 닫고 구매 modal을 띄움
+			$("#noneBuy").click(function () {
+				$('#cartModal').modal('hide'); // modal창 출력
+				$("#buyModal").modal({ backdrop: "static" });
+				$('#buyModal').modal('show'); // modal창 출력
+			});
+			// 장바구니에서 BUY 버튼 클릭 시 장바구니 modal을 닫고 구매 modal을 띄움 끝 -->
+
+			$("#memberBuy").click(function () {
+				$('#cartModal').modal('hide'); // modal창 출력
+				$("#buyModal").modal({ backdrop: "static" });
+				$('#buyModal').modal('show'); // modal창 출력
+			});
+
+			// <!-- 장바구니 목록 modal 사라지면 적용되는 스크립트
+			$('#cartModal').on('hidden.bs.modal', function (e) {
+			});
+			// 장바구니 목록 modal 사라지면 적용되는 스크립트 끝 -->
+
+			// <!-- 구매정보 modal 나타나면 적용되는 스크립트
+			$('#buyModal').on('shown.bs.modal', function (e) {
+				$("#orderpw").val("");
+				$("#orderpwconfirm").val("");
+				$("#orderEmail").val("");
+				$("#ordername").val("");
+				$("#ordercountry").val("");
+				$("#orderstate").val("");
+				$("#orderaddr1").val("");
+				$("#orderaddr2").val("");
+				$("#orderpost").val("");
+				$("#ordertel").val("");
+			});
+			// 구매정보 modal 나타나면 적용되는 스크립트 끝 -->
+
+			// <!-- 구매정보 modal 사라지면 적용되는 스크립트
+			$('#buyModal').on('hidden.bs.modal', function (e) {
+				$("#orderpw").val("");
+				$("#orderpwconfirm").val("");
+				$("#orderEmail").val("");
+				$("#ordername").val("");
+				$("#ordercountry").val("");
+				$("#orderstate").val("");
+				$("#orderaddr1").val("");
+				$("#orderaddr2").val("");
+				$("#orderpost").val("");
+				$("#ordertel").val("");
+			});
+			// 구매정보 modal 사라지면 적용되는 스크립트 끝 -->
+
+			// <!-- 페이지 상단 주문목록 클릭 시 주문목록 modal 띄움
+			$("#orderList").click(function () {
+				$("#orderListInputModal").modal({ backdrop: "static" });
+				$('#orderListInputModal').modal('show'); // modal창 출력
+			});
+
+			$('#orderListInputModal').on('shown.bs.modal', function (e) {
+				$("#orderValue").val("");
+				$("#orderListPw").val("");
+				$("#orderValue").focus();
+			});
+
+			$('#orderListInputModal').on('hidden.bs.modal', function (e) {
+				$("#orderValue").val("");
+				$("#orderListPw").val("");
+				$("#orderValue").focus();
+			});
+
+			$("#orderListConfirm").click(function () {
+
+				var orderid = $("#orderValue").val();
+				var orderpw = $("#orderListPw").val();
+
+				if (orderid == null || orderid == "") {
+					alert("Please Input Recipient Email or Recipient Name or Recipient Phone Number");
+					$("#orderValue").focus();
+					return;
+				}
+
+				if (orderpw == null || orderpw == "") {
+					alert("Please Input Password");
+					$("#orderListPw").focus();
+					return;
+				}
+
+				let confirmOrderData = $("#orderListInputForm").serialize();
+				$.ajax({
+					url: "order.jsp",
+					method: "POST",
+					data: confirmOrderData,
+					success: function (data) {
+						if (data > 100) {
+							alert("Session TimeOut.");
+							location.reload();
+						} else {
+							$('#orderListInputModal').modal('hide'); // modal창 출력
+							$('#orderBody').html(data); // 태그 id가 employee_detail인 태그에 출력
+							$("#orderModal").modal({ backdrop: "static" });
+							$('#orderModal').modal('show'); // modal창 출력
+						}
+					}
+				});
+			});
+
+			$("#memOrderList").click(function () {
+				$.ajax({
+					url: "order.jsp",
+					method: "POST",
+					success: function (data) {
+						if (data > 100) {
+							alert("Session TimeOut.");
+							location.reload();
+						} else {
+							$('#orderListInputModal').modal('hide'); // modal창 출력
+							$('#orderBody').html(data); // 태그 id가 employee_detail인 태그에 출력
+							$("#orderModal").modal({ backdrop: "static" });
+							$('#orderModal').modal('show'); // modal창 출력
+						}
+					}
+				});
+			});
+
+			// 페이지 상단 주문목록 클릭 시 주문목록 modal 띄움 끝 -->
+
+			// <!-- 상단의 login 클릭 시 로그인 modal을 띄움
+			$("#memLogin").click(function () {
+				$("#loginModal").modal({ backdrop: "static" });
+				$('#loginModal').modal('show'); // modal창 출력
+			});
+			// 상단의 login 클릭 시 로그인 modal을 띄움 끝 -->
+
+			// <!-- 로그인 modal이 나타날 때 포커스 이동
+			$('#loginModal').on('shown.bs.modal', function (e) {
+				$("#loginuserid").val("");
+				$("#loginuserpw").val("");
+				$("#loginuserid").focus();
+			});
+			// 로그인 modal이 나타날 때 포커스 이동 끝 -->
+
+			// <!-- 로그인 modal이 사라질 때 적용
+			$('#loginModal').on('hidden.bs.modal', function (e) {
+				$("#loginuserid").val("");
+				$("#loginuserpw").val("");
+				$("#loginuserid").focus();
+			});
+			// 로그인 modal이 사라질 때 적용 끝 -->
+
+			// <!-- login modal에서 login 버튼 클릭 시 로그인 처리 
+			$("#loginConfirm").click(function () {
+
+				var logid = $("#loginuserid").val();
+				var logpw = $("#loginuserpw").val();
+
+				if (logid == null || logid == "") {
+					alert("Please enter your ID.");
+					$("#loginuserid").focus();
+					return;
+				}
+
+				if (logpw == null || logpw == "") {
+					alert("Please enter Password.");
+					$("#loginuserpw").focus();
+					return;
+				}
+
+				if (!fn_emailChk(logid)) {
+					alert("Invalid email format.");
+					$("#loginuserid").focus();
+					return;
+				}
+
+				let loginData = $("#loginForm").serialize();
+				$.ajax({
+					url: "login.jsp",
+					method: "POST",
+					data: loginData,
+					success: function (data) {
+						if (data > 0) {
+							alert("Success Login");
+							location.reload();
+						} else {
+							alert("Invalid ID or password. Please try again.");
+							$("#loginuserid").focus();
+						}
+					}
+				});
+			});
+			// login modal에서 login 버튼 클릭 시 로그인 처리 --> 
+
+			// <!-- 상단 logout 버튼 클릭 시 logout 적용
+			$("#memLogout").click(function () {
+				$.ajax({
+					url: "logout.jsp",
+					method: "POST",
+					success: function (data) {
+						if (data > 0) { //반환되는 값이 0보다 크면 성공으로 간주
+							alert("Logged out successfully.");
+							location.reload();
+						}
+					}
+				});
+			});
+			// 상단 logout 버튼 클릭 시 logout 적용 끝 -->
+
+			// <!-- 상단 join 클릭 시 join modal을 띄움
+			$("#memJoin").click(function () {
+				$("#joinModal").modal({ backdrop: "static" });
+				$('#joinModal').modal('show'); // modal창 출력
+			});
+			// 상단 join 클릭 시 join modal을 띄움 끝 -->
+
+			// <!-- join modal이 나타날 때 포커스 이동
+			$('#joinModal').on('shown.bs.modal', function (e) {
+				$("#joinuserid").val("");
+				$("#joinuserpw").val("");
+				$("#joinuserpwconfirm").val("");
+				$("#joinusername").val("");
+				$("#joinusercountry").val("");
+				$("#joinuserstate").val("");
+				$("#joinuseraddr1").val("");
+				$("#joinuseraddr2").val("");
+				$("#joinusertel").val("");
+				$("#joinuserid").focus();
+			});
+			// join modal이 나타날 때 포커스 이동 끝 -->
+
+			// <!-- 이메일 중복 버튼 클릭 시 로직
+			$("#checkEmail").click(function () {
+
+				var joinid = $("#joinuserid").val();
+
+				if (!fn_emailChk(joinid)) {
+					alert("Invalid email format.");
+					$("#joinuserid").focus();
+					return;
+				}
+
+				let joinData = $("#joinForm").serialize();
+				$.ajax({
+					url: "checkEmail.jsp",
+					method: "POST",
+					data: joinData,
+					success: function (data) {
+						if (data > 0) {
+							alert("This email is already registered.");
+							$("#joinuserid").focus();
+							return;
+						} else {
+							$("#joinuserid").removeClass("border-danger");
+							$("#joinuserid").addClass("border-success");
+							$("#checkEmail").removeClass("btn-danger");
+							$("#checkEmail").addClass("btn-success");
+							$("#joinuserid").attr("readonly", true);
+							$("#checkEmail").attr("disabled", true);
+							$("#joinuserpw").focus();
+						}
+					}
+				});
+			});
+			// 이메일 중복 버튼 클릭 시 로직 끝 -->
+
+			// <!-- join modal에서 join 버튼 클릭 시 정합성 확인 후 가입 처리 
+			$("#joinConfirm").click(function () {
+
+				if ($("#checkEmail").hasClass("btn-danger") && $("#joinuserid").hasClass("border-danger")) {
+					alert("Duplicate check required.");
+					$("#joinuserid").focus();
+					return;
+				}
+
+				if ($("#joinuserpw").hasClass("border-danger")) {
+					alert("Please enter Password.");
+					$("#joinuserpw").focus();
+					return;
+				}
+
+				if ($("#joinuserpwconfirm").hasClass("border-danger")) {
+					alert("Passwords do not match.");
+					$("#joinuserpwconfirm").focus();
+					return;
+				}
+
+				if ($("#joinusername").hasClass("border-danger")) {
+					alert("Please enter Name.");
+					$("#joinusername").focus();
+					return;
+				}
+
+				if ($("#joinusertel").hasClass("border-danger")) {
+					alert("Please enter Phone Number.");
+					$("#joinusertel").focus();
+					return;
+				}
+
+				let joinData = $("#joinForm").serialize();
+				$.ajax({
+					url: "join.jsp",
+					method: "POST",
+					data: joinData,
+					success: function (data) {
+						if (data > 0) {
+							alert("Join Successful.");
+							location.reload();
+						} else {
+							alert("Join Failed.");
+							$("#joinuserid").focus();
+						}
+					}
+				});
+			});
+			// join modal에서 join 버튼 클릭 시 로그인 처리 --> 
+
+			// <!-- 상단 myinfo 클릭 시 myinfo modal을 띄움
+			$("#memInfo").click(function () {
+				$.ajax({
+					url: "myinfo.jsp",
+					method: "POST",
+					success: function (data) {
+						if (data > 100) {
+							alert("Session TimeOut.");
+							location.reload();
+						} else {
+							var jsonObject = JSON.parse(data);
+							$("#modifyname").val(jsonObject.name);
+							$("#modifycountry").val(jsonObject.country);
+							$("#modifystate").val(jsonObject.state);
+							$("#modifyaddr1").val(jsonObject.addr1);
+							$("#modifyaddr2").val(jsonObject.addr2);
+							$("#modifypost").val(jsonObject.post);
+							$("#modifytel").val(jsonObject.tel);
+
+							//					$('#infoBody').html(data); // 태그 id가 employee_detail인 태그에 출력
+							$("#infoModal").modal({ backdrop: "static" });
+							$('#infoModal').modal('show'); // modal창 출력
+						}
+					}
+				});
+			});
+			// 상단 myinfo 클릭 시 myinfo modal을 띄움 끝 -->
+
+			// <!-- myinfo modal에서 modify 버튼 클릭 시 정합성 확인 후 데이터 수정 처리 
+			$("#modifyConfirm").click(function () {
+
+				if ($("#modifypw").val().length > 0) {
+					if ($("#modifypw").hasClass("border-danger")) {
+						alert("Please enter Password.");
+						$("#modifypw").focus();
+						return;
+					}
+
+					if ($("#modifypwconfirm").hasClass("border-danger")) {
+						alert("Passwords do not match.");
+						$("#modifypwconfirm").focus();
+						return;
+					}
+				}
+
+				if ($("#modifytel").hasClass("border-danger")) {
+					alert("Please enter Phone Number.");
+					$("#modifytel").focus();
+					return;
+				}
+
+				let modifyData = $("#modifyForm").serialize();
+				$.ajax({
+					url: "modify.jsp",
+					method: "POST",
+					data: modifyData,
+					success: function (data) {
+						if (data > 0) {
+							alert("Modify Successful.");
+							$('#infoModal').modal('hide'); // modal창 출력
+						} else {
+							alert("Modify Failed.");
+						}
+					}
+				});
+			});
+			// myinfo modal에서 modify 버튼 클릭 시 정합성 확인 후 데이터 수정 처리 끝 --> 
+
+			// <!-- 하단 addcart 클릭 시 선택 된 상품을 장바구니에 추가
+			$("#AddCart").click(function () {
+				// Auth guard: 로그인 필요
+				if (!firebase.auth().currentUser) {
+					if (confirm('로그인이 필요합니다. 구글 로그인을 하시겠습니까?')) {
+						googleLogin();
+					}
+					return;
+				}
+				let goodsForm = $("#buyGoods").serialize();
+				$.ajax({
+					url: "addCart.jsp",
+					method: "POST",
+					data: goodsForm,
+					success: function (data) {
+						if (data > 100) { //반환되는 값이 0보다 크면 성공으로 간주
+							alert("Session TimeOut.");
+							location.reload();
+						} else if (data <= 0) {
+							alert("Failed.");
+						} else {
+							$("#goodsCnt").val(1);
+							number = 1;
+							$("#cartCnt").html(data);
+							$("#cartCnt2").html(data);
+							$("#successModal").modal('show');
+						}
+					}
+				});
+			});
+			// 하단 addcart 클릭 시 선택 된 상품을 장바구니에 추가 끝 -->
+
+			// <!-- 하단의 BUY NOW 버튼 클릭 시 구매 modal을 띄움
+			$("#BuyNow").click(function () {
+				// Auth guard: 로그인 필요
+				if (!firebase.auth().currentUser) {
+					if (confirm('로그인이 필요합니다. 구글 로그인을 하시겠습니까?')) {
+						googleLogin();
+					}
+					return;
+				}
+				let goodsForm = $("#buyGoods").serialize();
+				$.ajax({
+					url: "addCart.jsp",
+					method: "POST",
+					data: goodsForm,
+					success: function (data) {
+						if (data > 100) { //반환되는 값이 0보다 크면 성공으로 간주
+							alert("Session TimeOut.");
+							location.reload();
+						} else if (data <= 0) {
+							alert("Failed.");
+						} else {
+							$("#cartCnt").html(data);
+							$("#cartCnt2").html(data);
+							$("#goodsCnt").val(1);
+							number = 1;
+							$.ajax({
+								url: "cart.jsp",
+								method: "POST",
+								success: function (data) {
+									if (data > 100) {
+										alert("Session TimeOut.");
+										location.reload();
+									} else {
+										$('#cartBody').html(data); // 태그 id가 employee_detail인 태그에 출력
+										$("#cartModal").modal({ backdrop: "static" });
+										$('#cartModal').modal('show'); // modal창 출력
+									}
+								}
+							});
+						}
+					}
+				});
+			});
+			// 하단의 BUY NOW 버튼 클릭 시 구매 modal을 띄움 끝 -->
+
+			// <!-- 상품 목록 변경 시 상품 옵션 셀렉트 박스 옵션 변경
+			function subSelectBoxChange(checkVal) {
+				var subCategorySelectBox = $("select[name='goodsOption']");
+				subCategorySelectBox.children().remove(); //기존 리스트 삭제
+				checkFirst = 0;
+
+				for (var i = 0; i < subCategoryArray.length; i++) {
+					if (checkVal == subCategoryArray[i].main_category_id) {
+						subCategorySelectBox.append("<option value='" + subCategoryArray[i].sub_category_id + "'>" + subCategoryArray[i].sub_category_name + "</option>");
+						if (checkFirst == 0) {
+							changePrice(subCategoryArray[i].sub_category_price);
+							checkFirst++;
+						}
+					}
+				}
+			}
+			// 상품 목록 변경 시 상품 옵션 셀렉트 박스 옵션 변경 끝 -->
+
+			// 첫번째 결제 버튼 클릭
+			$("#pay1").click(function () {
+
+
+
+				if ($("#orderpw").hasClass("border-danger")) {
+					alert("Please enter Password.");
+					$("#orderpw").focus();
+					return;
+				}
+
+				if ($("#orderpwconfirm").hasClass("border-danger")) {
+					alert("Passwords do not match.");
+					$("#orderpwconfirm").focus();
+					return;
+				}
+
+
+				if ($("#ordername").hasClass("border-danger")) {
+					alert("Please enter Recipient Name.");
+					$("#ordername").focus();
+					return;
+				}
+
+				if ($("#orderstate").hasClass("border-danger")) {
+					alert("Please enter Recipient Region.");
+					$("#orderstate").focus();
+					return;
+				}
+
+				if ($("#orderaddr1").hasClass("border-danger")) {
+					alert("Please enter Recipient City & Area.");
+					$("#orderaddr1").focus();
+					return;
+				}
+
+				if ($("#orderaddr2").hasClass("border-danger")) {
+					alert("Please enter Recipient Detailes Address.");
+					$("#orderaddr2").focus();
+					return;
+				}
+
+				if ($("#orderpost").hasClass("border-danger")) {
+					alert("Please enter Recipient Postcode.");
+					$("#orderpost").focus();
+					return;
+				}
+
+				if ($("#ordertel").hasClass("border-danger")) {
+					alert("Please enter Recipient Phone Number.");
+					$("#ordertel").focus();
+					return;
+				}
+
+				$("#payKind").val("Bank");
+				let buyForm = $("#buyForm").serialize();
+
+				$.ajax({
+					url: "addOrder.jsp",
+					method: "POST",
+					data: buyForm,
+					success: function (data) {
+						if (data > 100) {
+							alert("Session TimeOut.");
+							location.reload();
+						} else {
+							if (data > 0) {
+								$.ajax({
+									url: "totPrice.jsp",
+									method: "POST",
+									success: function (data) {
+										$('#buyModal').modal('hide'); // modal창 출력
+										$('#pay1Price').KRW("KRW " + data);
+										$("#pay1Modal").modal({ backdrop: "static" });
+										$('#pay1Modal').modal('show'); // modal창 출력
+									}
+								});
+							} else {
+								alert("Failed.");
+							}
+						}
+					}
+				});
+			});
+			// 첫번째 결제 버튼 클릭 끝
+
+			// 첫번째 결제 버튼 클릭
+			$("#pay1Confirm").click(function () {
+
+				if ($("#pay1InputName").hasClass("border-danger")) {
+					alert("Please enter the Depositor Name accurately.");
+					$("#pay1InputName").focus();
+					return;
+				}
+
+				$.ajax({
+					url: "upOrder.jsp",
+					method: "POST",
+					data: { "inputName": $("#pay1InputName").val(), "payKind": "BANK" },
+					success: function (data) {
+						if (data > 100) {
+							alert("Session TimeOut.");
+							location.reload();
+						} else {
+							$('#pay1Modal').modal('hide'); // modal창 출력
+							alert("Your purchase has been successfully processed.");
+							location.reload()
+						}
+					}
+				});
+			});
+			// 첫번째 결제 버튼 클릭 끝
+
+			// 두번째 결제 버튼 클릭
+			$("#pay2").click(function () {
+			});
+			// 두번째 결제 버튼 클릭 끝
+
+			// 세번째 결제 버튼 클릭
+			$("#pay3").click(function () {
+			});
+			// 세번째 결제 버튼 클릭 끝
+
+			// 네번째 결제 버튼 클릭
+			$("#pay4").click(function () {
+			});
+			// 네번째 결제 버튼 클릭 끝
+
+			// 다섯번째 결제 버튼 클릭
+			$("#pay5").click(function () {
+			});
+			// 다섯번째 결제 버튼 클릭 끝
+
+			// 여섯번째 결제 버튼 클릭
+			$("#pay6").click(function () {
+			});
+			// 여섯번째 결제 버튼 클릭 끝
+
+			// 현장결제 버튼 클릭
+			$("#pay7").click(function () {
+
+
+
+				if ($("#orderpw").hasClass("border-danger")) {
+					alert("Please enter Password.");
+					$("#orderpw").focus();
+					return;
+				}
+
+				if ($("#orderpwconfirm").hasClass("border-danger")) {
+					alert("Passwords do not match.");
+					$("#orderpwconfirm").focus();
+					return;
+				}
+
+
+				if ($("#ordername").hasClass("border-danger")) {
+					alert("Please enter Recipient Name.");
+					$("#ordername").focus();
+					return;
+				}
+
+				if ($("#orderstate").hasClass("border-danger")) {
+					alert("Please enter Recipient Region.");
+					$("#orderstate").focus();
+					return;
+				}
+
+				if ($("#orderaddr1").hasClass("border-danger")) {
+					alert("Please enter Recipient City & Area.");
+					$("#orderaddr1").focus();
+					return;
+				}
+
+				if ($("#orderaddr2").hasClass("border-danger")) {
+					alert("Please enter Recipient Detailes Address.");
+					$("#orderaddr2").focus();
+					return;
+				}
+
+				if ($("#orderpost").hasClass("border-danger")) {
+					alert("Please enter Recipient Postcode.");
+					$("#orderpost").focus();
+					return;
+				}
+
+				if ($("#ordertel").hasClass("border-danger")) {
+					alert("Please enter Recipient Phone Number.");
+					$("#ordertel").focus();
+					return;
+				}
+
+				$("#payKind").val("Local");
+				let buyForm = $("#buyForm").serialize();
+
+				$.ajax({
+					url: "addOrder.jsp",
+					method: "POST",
+					data: buyForm,
+					success: function (data) {
+						if (data > 100) {
+							alert("Session TimeOut.");
+							location.reload();
+						} else {
+							if (data > 0) {
+								$('#buyModal').modal('hide'); // modal창 출력
+								$("#pay7Modal").modal({ backdrop: "static" });
+								$('#pay7Modal').modal('show'); // modal창 출력
+							} else {
+								alert("Failed.");
+							}
+						}
+					}
+				});
+			});
+			// 현장결제 버튼 클릭 끝
+
+			// 첫번째 결제 버튼 클릭
+			$("#pay7Confirm").click(function () {
+
+				if ($("#paypw").val() != "1234") {
+					alert("Passwords do not match.");
+					$("#paypw").val("");
+					$("#paypw").focus();
+					return;
+				}
+
+				$.ajax({
+					url: "upOrder.jsp",
+					method: "POST",
+					data: { "inputName": "", "payKind": "Local" },
+					success: function (data) {
+						if (data > 100) {
+							alert("Session TimeOut.");
+							location.reload();
+						} else {
+							$('#pay1Modal').modal('hide'); // modal창 출력
+							alert("Your purchase has been successfully processed.");
+							location.reload()
+						}
+					}
+				});
+			});
+			// 첫번째 결제 버튼 클릭 끝
+
+			// 회원정보 사용 체크박스 클릭
+			$("#memDataUse").click(function () {
+				if ($('input:checkbox[id="memDataUse"]').is(":checked") == true) {
+
+					$.ajax({
+						url: "myinfo.jsp",
+						method: "POST",
+						success: function (data) {
+							if (data > 100) {
+								alert("Session TimeOut.");
+								location.reload();
+							} else {
+								var jsonObject = JSON.parse(data);
+								$("#ordername").val(jsonObject.name);
+								requiredText($("#ordername"));
+								$("#ordercountry").val(jsonObject.country);
+								requiredText($("#ordercountry"));
+								$("#orderstate").val(jsonObject.state);
+								requiredText($("#orderstate"));
+								$("#orderaddr1").val(jsonObject.addr1);
+								requiredText($("#orderaddr1"));
+								$("#orderaddr2").val(jsonObject.addr2);
+								requiredText($("#orderaddr2"));
+								$("#orderpost").val(jsonObject.post);
+								requiredText($("#orderpost"));
+								$("#ordertel").val(jsonObject.tel);
+								requiredText($("#ordertel"));
+							}
+						}
+					});
+
+				} else {
+					$("#ordername").val("");
+					$("#ordercountry").val("");
+					$("#orderstate").val("");
+					$("#orderaddr1").val("");
+					$("#orderaddr2").val("");
+					$("#orderpost").val("");
+					$("#ordertel").val("");
+					$("#ordername").focus();
+				}
+			});
+			// 회원정보 사용 체크박스 클릭 끝
+
+		});
+
+		$(document).click(function (event) {
+			var clickover = $(event.target);
+			var _opened = $(".navbar-collapse").hasClass("show");
+			if (_opened === true && !clickover.hasClass("navbar-toggler") && !clickover.hasClass("navbar-toggler-icon") && !clickover.hasClass("nav-link") && !clickover.hasClass("navbar-brand")) {
+				$(".navbar-toggler").click();
+			}
+		});
+
+		// <!-- 이메일 정합성 검사 로직
+		const pattern = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-za-z0-9\-]+/;
+
+		function fn_emailChk(email) {
+			if (!pattern.test(email)) {
+				return false;
+			}
+			return true;
+		}
+		// 이메일 정합성 검사 로직 끝 -->
+
+		// <!-- 금액을 inoput에 넣을 때 콤마 적용 로직
+		function changePrice(getPrice) {
+			var priceVal = getPrice.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+			$('#viewPrice').val(priceVal);
+			$('#goodsPrice').val(getPrice);
+
+		}
+		// 금액을 inoput에 넣을 때 콤마 적용 로직 끝 -->
+
+		// <!-- input에 영어와 스페이스만 입력 가능하도록 제약
+		function alphabetOnInput(e) {
+			e.value = e.value.replace(/[^A-Za-z\s]/g, '');
+		}
+		// input에 영어와 스페이스만 입력 가능하도록 제약 끝 -->
+
+		// <!-- input에 숫자만 입력 가능하도록 제약
+		function numberOnInput(e) {
+			e.value = e.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+		}
+		// input에 숫자만 입력 가능하도록 제약 끝 -->
+
+		// <!-- 필수 입력사항에 4글자 이상 입력 하고 정합성 검사를 진행
+		function requiredText(e) {
+			if ($(e).val().length > 4) {
+				if ($(e).hasClass("border-danger")) {
+					$(e).removeClass("border-danger");
+					$(e).addClass("border-success");
+				}
+			} else {
+				if ($(e).hasClass("border-success")) {
+					$(e).removeClass("border-success");
+					$(e).addClass("border-danger");
+				}
+			}
+		}
+
+		// 필수 입력사항에 4글자 이상 입력 하고 정합성 검사를 진행 끝 -->
+
+		// <!-- 회원가입 시 비밀번호 확인 입력 시 비밀번호 정합성 우선 체크
+		function joinCheckPass() {
+			if ($("#joinuserpw").hasClass("border-danger")) {
+				$("#joinuserpw").focus();
+				alert("Please enter Password.");
+				return;
+			}
+		}
+		// 회원가입 시 비밀번호 확인 입력 시 비밀번호 정합성 우선 체크 -->
+
+		// <!-- 수령인 입력 시 비밀번호 확인 입력 시 비밀번호 정합성 우선 체크
+		function orderCheckPass() {
+			if ($("#orderpw").hasClass("border-danger")) {
+				$("#orderpw").focus();
+				alert("Please enter Password.");
+				return;
+			}
+		}
+		// 수령인 입력 시 비밀번호 확인 입력 시 비밀번호 정합성 우선 체크 -->
+
+		// <!-- 회원정보 수정 시 비밀번호 확인 입력 시 비밀번호 정합성 우선 체크
+		function modifyCheckPass() {
+			if ($("#modifypw").hasClass("border-danger")) {
+				$("#modifypw").focus();
+				alert("Please enter Password.");
+				return;
+			}
+		}
+		// 회원정보 수정 시 비밀번호 확인 입력 시 비밀번호 정합성 우선 체크 -->
+
+		// <!-- Scroll Reveal Animation Logic
+		document.addEventListener('DOMContentLoaded', function () {
+			var reveals = document.querySelectorAll('.product-item');
+
+			// Add reveal class to all product items initially
+			reveals.forEach(function (reveal) {
+				reveal.classList.add('reveal');
+			});
+
+			var observer = new IntersectionObserver(function (entries) {
+				entries.forEach(function (entry) {
+					if (entry.isIntersecting) {
+						entry.target.classList.add('active');
+						// Optional: Stop observing once revealed
+						// observer.unobserve(entry.target); 
+					}
+				});
+			}, {
+				threshold: 0.1,
+				rootMargin: "0px 0px -50px 0px"
+			});
+
+			reveals.forEach(function (reveal) {
+				observer.observe(reveal);
+			});
+		});
+		// Scroll Reveal Animation Logic End -->
+
+		// <!-- 회원가입 시 비밀번호와 비밀번호 확인이 같은지 검사
+		function joinPassConfirm(e) {
+			if ($(e).val() == $("#joinuserpw").val()) {
+				if ($(e).hasClass("border-danger")) {
+					$(e).removeClass("border-danger");
+					$(e).addClass("border-success");
+				}
+			} else {
+				if ($(e).hasClass("border-success")) {
+					$(e).removeClass("border-success");
+					$(e).addClass("border-danger");
+				}
+			}
+		}
+		// 회원가입 시 비밀번호와 비밀번호 확인이 같은지 검사 끝 -->
+
+		// <!-- 수령인 입력 시 비밀번호와 비밀번호 확인이 같은지 검사
+		function orderPassConfirm(e) {
+			if ($(e).val() == $("#orderpw").val()) {
+				if ($(e).hasClass("border-danger")) {
+					$(e).removeClass("border-danger");
+					$(e).addClass("border-success");
+				}
+			} else {
+				if ($(e).hasClass("border-success")) {
+					$(e).removeClass("border-success");
+					$(e).addClass("border-danger");
+				}
+			}
+		}
+		// 수령인 입력 시 비밀번호와 비밀번호 확인이 같은지 검사 끝 -->
+
+		// <!-- 회원정보 수정 시 비밀번호와 비밀번호 확인이 같은지 검사
+		function modifyPassConfirm(e) {
+			if ($(e).val() == $("#modifypw").val()) {
+				if ($(e).hasClass("border-danger")) {
+					$(e).removeClass("border-danger");
+					$(e).addClass("border-success");
+				}
+			} else {
+				if ($(e).hasClass("border-success")) {
+					$(e).removeClass("border-success");
+					$(e).addClass("border-danger");
+				}
+			}
+		}
+		// 회원정보 수정 시 비밀번호와 비밀번호 확인이 같은지 검사 끝 -->
+
+		// <!-- View Mode Toggle Logic
+		window.toggleViewMode = function () {
+			$('body').toggleClass('mobile-view-simulation');
+			var btn = $('#viewToggleBtn');
+			var icon = $('#toggleIcon');
+
+			if ($('body').hasClass('mobile-view-simulation')) {
+				icon.removeClass('bi-phone').addClass('bi-pc-display');
+				btn.html('<span id="toggleIcon" class="bi bi-pc-display"></span> <span id="toggleText">PC View</span>');
+				btn.removeClass('btn-outline-light').addClass('btn-light text-primary');
+			} else {
+				icon.removeClass('bi-pc-display').addClass('bi-phone');
+				btn.html('<span id="toggleIcon" class="bi bi-phone"></span> <span id="toggleText">Mobile View</span>');
+				btn.removeClass('btn-light text-primary').addClass('btn-outline-light');
+			}
+		}
+		// View Mode Toggle Logic End -->
+
+	</script>
+
+	<title>다이트 한의원</title>
+</head>
+
+<body data-spy="scroll" data-target=".navbar" data-offset="50">
+
+	<div class="wrapper">
+		<!-- Header -->
+		<nav class="navbar navbar-expand-lg">
+			<a class="navbar-brand" href="#">DAEAT Shop</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item"><a class="nav-link" href="#productRow">Products</a></li>
+					<li class="nav-item"><a class="nav-link" href="#" data-toggle="modal"
+							data-target="#orderListModal">Order List</a></li>
+					<!-- Auth-aware buttons (로그아웃 상태) -->
+					<li class="nav-item" id="navLoginBtn"><a class="nav-link" href="#"
+							onclick="googleLogin(); return false;"><i class="bi bi-google mr-1"></i>Login</a></li>
+					<li class="nav-item" id="navJoinBtn"><a class="nav-link" href="#" data-toggle="modal"
+							data-target="#joinModal">Join</a></li>
+					<!-- Auth-aware buttons (로그인 상태) -->
+					<li class="nav-item" id="navUserName" style="display:none;"><span class="nav-link"
+							style="color: #ffd700; font-weight: 600;"><i class="bi bi-person-check-fill mr-1"></i><span
+								id="headerUserName">User</span></span></li>
+					<li class="nav-item" id="navMyPageBtn" style="display:none;"><a class="nav-link" href="#"
+							data-toggle="modal" data-target="#myPageModal"><i class="bi bi-person-circle mr-1"></i>My
+							Page</a></li>
+					<li class="nav-item" id="navLogoutBtn" style="display:none;"><a class="nav-link" href="#"
+							onclick="firebaseLogout(); return false;">Logout</a></li>
+				</ul>
+			</div>
+		</nav>
+
+		<!-- Main Banner / Slider (Optional) -->
+		<div id="demo" class="carousel slide" data-ride="carousel" style="margin-bottom: 30px;">
+			<ul class="carousel-indicators">
+				<li data-target="#demo" data-slide-to="0" class="active"></li>
+				<li data-target="#demo" data-slide-to="1"></li>
+				<li data-target="#demo" data-slide-to="2"></li>
+			</ul>
+			<div class="carousel-inner">
+				<div class="carousel-item active">
+					<img src="/resource/img/m_main_slide01.jpg" alt="Slide 1" width="100%" height="auto">
+				</div>
+				<div class="carousel-item">
+					<img src="/resource/img/m_main_slide02.jpg" alt="Slide 2" width="100%" height="auto">
+				</div>
+				<div class="carousel-item">
+					<img src="/resource/img/m_main_slide03.jpg" alt="Slide 3" width="100%" height="auto">
+				</div>
+			</div>
+			<a class="carousel-control-prev" href="#demo" data-slide="prev">
+				<span class="carousel-control-prev-icon"></span>
+			</a>
+			<a class="carousel-control-next" href="#demo" data-slide="next">
+				<span class="carousel-control-next-icon"></span>
+			</a>
+		</div>
+
+		<!-- Product Grid -->
+		<div id="productRow">
+
+			<!-- Sahyang Gongjindan -->
+			<div class="product-item">
+				<div class="card product-card" id="G2025082800000">
+					<img src="/resource/img/G2025082800000.png" class="card-img-top" alt="Sahyang Gongjindan">
+					<div class="card-body">
+						<h1 class="card-title h3 text-dark font-weight-bold mb-3">Sahyang Gongjindan (麝香拱辰丹)</h1>
+
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">Key Ingredients</h6>
+							<p class="card-text text-muted small mb-0">Musk (Sahyang), Deer Antler Velvet, Angelica Root
+							</p>
+						</div>
+
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">Benefits</h6>
+							<p class="card-text text-muted small mb-0">
+								Boosts vitality, strengthens immunity, and improves blood circulation.
+							</p>
+						</div>
+
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">How to Take</h6>
+							<p class="card-text text-muted small mb-0">
+								Chew one pill carefully with a glass of warm water on an empty stomach every morning.
+							</p>
+						</div>
+
+						<div class="chinese-text border-top pt-3 mt-3">
+							<h5 class="font-weight-bold text-dark h6">功效</h5>
+							<p class="card-text text-muted small">
+								增强活力，强化免疫力，改善血液循环。
+							</p>
+							<h5 class="font-weight-bold text-dark h6 mt-2">服用方法</h5>
+							<p class="card-text text-muted small">
+								每日清晨空腹，细嚼慢咽一丸，温水送服。
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Mokhyang Gongjindan -->
+			<div class="product-item">
+				<div class="card product-card" id="search">
+					<img src="/resource/img/G2022092100004.png" class="card-img-top" alt="Mokhyang Gongjindan">
+					<div class="card-body">
+						<h1 class="card-title h3 text-dark font-weight-bold mb-3">Mokhyang Gongjindan (木香拱辰丹)</h1>
+
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">Key Ingredients</h6>
+							<p class="card-text text-muted small mb-0">Saussurea Root (Mokhyang), Deer Antler, Cornus
+								Fruit</p>
+						</div>
+
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">Benefits</h6>
+							<p class="card-text text-muted small mb-0">
+								Eases stress, aids digestion, and relieves chronic fatigue.
+							</p>
+						</div>
+
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">How to Take</h6>
+							<p class="card-text text-muted small mb-0">
+								Chew one pill carefully with a glass of warm water on an empty stomach every morning.
+							</p>
+						</div>
+
+						<div class="chinese-text border-top pt-3 mt-3">
+							<h5 class="font-weight-bold text-dark h6">功效</h5>
+							<p class="card-text text-muted small">
+								缓解压力，帮助消化，改善慢性疲劳。
+							</p>
+							<h5 class="font-weight-bold text-dark h6 mt-2">服用方法</h5>
+							<p class="card-text text-muted small">
+								每日一丸，空腹细嚼慢咽，温水送服。
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Kyungokgo -->
+			<div class="product-item">
+				<div class="card product-card" id="G2025082800001">
+					<img src="/resource/img/G2025082800001.png" class="card-img-top" alt="Kyungokgo">
+					<div class="card-body">
+						<h1 class="card-title h3 text-dark font-weight-bold mb-3">Kyungokgo (琼玉膏)</h1>
+
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">Key Ingredients</h6>
+							<p class="card-text text-muted small mb-0">Rehmannia Root, Poria Mushroom, Ginseng, Honey
+							</p>
+						</div>
+
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">Benefits</h6>
+							<p class="card-text text-muted small mb-0">
+								Nourishes Yin and revitalizes contents, relieves dry cough, and improves overall
+								vitality and longevity.
+							</p>
+						</div>
+
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">How to Take</h6>
+							<p class="card-text text-muted small mb-0">
+								Take one stick or spoonful daily, directly or mixed with warm water.
+							</p>
+						</div>
+
+						<div class="chinese-text border-top pt-3 mt-3">
+							<h5 class="font-weight-bold text-dark h6">功效</h5>
+							<p class="card-text text-muted small">
+								滋阴养颜，润肺止咳，补气安神，延年益寿。
+							</p>
+							<h5 class="font-weight-bold text-dark h6 mt-2">服用方法</h5>
+							<p class="card-text text-muted small">
+								每日一包（或一勺），直接服用或温水冲服。
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Woongdambulchidan -->
+			<div class="product-item">
+				<div class="card product-card" id="G2025082800002">
+					<img src="/resource/img/G2025082800002.png" class="card-img-top" alt="Woongdambulchidan">
+					<div class="card-body">
+						<h1 class="card-title h3 text-dark font-weight-bold mb-3">Woongdambulchidan (熊胆不醉丹)</h1>
+
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">Key Ingredients</h6>
+							<p class="card-text text-muted small mb-0">Bear Bile (Medicinal), Pueraria Root, Hovenia
+								Dulcis</p>
+						</div>
+
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">Benefits</h6>
+							<p class="card-text text-muted small mb-0">
+								Powerfully supports liver health, aids detoxification, and relieves hangover symptoms.
+							</p>
+						</div>
+
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">How to Take</h6>
+							<p class="card-text text-muted small mb-0">
+								Take one pill before or after drinking alcohol, or daily for liver health.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 3-Day Detox Program -->
+			<div class="product-item">
+				<div class="card product-card" id="G2025082800003">
+					<img src="/resource/img/G2025082800003.png" class="card-img-top" alt="3-Day Detox Program">
+					<div class="card-body pb-5">
+						<h1 class="card-title h3 text-dark font-weight-bold mb-3">3-Day Detox Program (三日排毒)</h1>
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">Key Features</h6>
+							<p class="card-text text-muted small mb-0">Intensive cleanse, Digestive rest, Reset
+								metabolism</p>
+						</div>
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">Benefits</h6>
+							<p class="card-text text-muted small mb-0">
+								Eliminates toxins, reduces bloating, and jumpstarts weight loss in just 3 days.
+							</p>
+						</div>
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">How to Take</h6>
+							<p class="card-text text-muted small mb-0">
+								Follow the specific schedule: Morning, Noon, and Night with plenty of water.
+							</p>
+						</div>
+						<div class="chinese-text border-top pt-3 mt-3">
+							<h5 class="font-weight-bold text-dark h6">功效</h5>
+							<p class="card-text text-muted small">
+								排除毒素，减少腹胀，三天内启动减肥代谢。
+							</p>
+							<h5 class="font-weight-bold text-dark h6 mt-2">服用方法</h5>
+							<p class="card-text text-muted small">
+								按照早、中、晚的时间表服用，并多喝水。
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- DAEAT S7 BOOSTER PLUS -->
+			<div class="product-item">
+				<div class="card product-card" id="G2025082800004">
+					<img src="/resource/img/G2025082800004.png" class="card-img-top" alt="DAEAT S7 BOOSTER PLUS">
+					<div class="card-body pb-5">
+						<h1 class="card-title h3 text-dark font-weight-bold mb-3">DAEAT S7 BOOSTER PLUS</h1>
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">Key Ingredients</h6>
+							<p class="card-text text-muted small mb-0">7 Green Plant Extracts, Catechin, Vitamins</p>
+						</div>
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">Benefits</h6>
+							<p class="card-text text-muted small mb-0">
+								Accelerates metabolism, burns body fat, and provides antioxidant support.
+							</p>
+						</div>
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">How to Take</h6>
+							<p class="card-text text-muted small mb-0">
+								Take one packet before or after exercise, or with a heavy meal.
+							</p>
+						</div>
+						<div class="chinese-text border-top pt-3 mt-3">
+							<h5 class="font-weight-bold text-dark h6">功效</h5>
+							<p class="card-text text-muted small">
+								加速新陈代谢，燃烧体脂，提供抗氧化支持。
+							</p>
+							<h5 class="font-weight-bold text-dark h6 mt-2">服用方法</h5>
+							<p class="card-text text-muted small">
+								运动前后或大餐时服用一包。
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- DAEAT ENZYME -->
+			<div class="product-item">
+				<div class="card product-card" id="G2025082800005">
+					<img src="/resource/img/G2025082800005.png" class="card-img-top" alt="DAEAT ENZYME">
+					<div class="card-body pb-5">
+						<h1 class="card-title h3 text-dark font-weight-bold mb-3">DAEAT ENZYME (酵素)</h1>
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">Key Ingredients</h6>
+							<p class="card-text text-muted small mb-0">Fermented Grains, Bromelain, Papain</p>
+						</div>
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">Benefits</h6>
+							<p class="card-text text-muted small mb-0">
+								Supports digestion, reduces bloating after meals, and improves nutrient absorption.
+							</p>
+						</div>
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">How to Take</h6>
+							<p class="card-text text-muted small mb-0">
+								Take one stick directly or with water after a meal.
+							</p>
+						</div>
+						<div class="chinese-text border-top pt-3 mt-3">
+							<h5 class="font-weight-bold text-dark h6">功效</h5>
+							<p class="card-text text-muted small">
+								帮助消化，减少餐后腹胀，提高营养吸收。
+							</p>
+							<h5 class="font-weight-bold text-dark h6 mt-2">服用方法</h5>
+							<p class="card-text text-muted small">
+								餐后直接服用或温水送服一包。
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- DAEAT MCT OIL -->
+			<div class="product-item">
+				<div class="card product-card" id="G2025082800006">
+					<img src="/resource/img/G2025082800006.png" class="card-img-top" alt="DAEAT MCT OIL">
+					<div class="card-body pb-5">
+						<h1 class="card-title h3 text-dark font-weight-bold mb-3">DAEAT MCT OIL</h1>
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">Key Ingredients</h6>
+							<p class="card-text text-muted small mb-0">100% Coconut Derived MCT Oil (C8, C10)</p>
+						</div>
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">Benefits</h6>
+							<p class="card-text text-muted small mb-0">
+								Provides instant clean energy, supports ketosis, and enhances cognitive function.
+							</p>
+						</div>
+						<div class="mb-3">
+							<h6 class="font-weight-bold text-dark mb-1">How to Take</h6>
+							<p class="card-text text-muted small mb-0">
+								Add to coffee, smoothies, or salads. Start with 1 teaspoon and increase gradually.
+							</p>
+						</div>
+						<div class="chinese-text border-top pt-3 mt-3">
+							<h5 class="font-weight-bold text-dark h6">功效</h5>
+							<p class="card-text text-muted small">
+								提供即时纯净能量，维持生酮状态，增强认知功能。
+							</p>
+							<h5 class="font-weight-bold text-dark h6 mt-2">服用方法</h5>
+							<p class="card-text text-muted small">
+								加入咖啡、沙拉或果昔中食用。从一茶匙开始逐渐增加。
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="clearfix mr-3 float-right" style="height: 0; position: sticky; bottom: 180px;">
+			<button id="cartList2" class="btn btn-light" type="button"><span class="bi bi-cart2"></span><span
+					class="badge badge-pill badge-danger position-absolute top-0 start-100 translate-middle rounded-pill"
+					id="cartCnt2">0</span></button>
+		</div>
+
+
+		<!-- 화면 하단에 따라다니는 주문 진행 창 -->
+		<div class="fixed-bottom-bar">
+			<form class="form-inline" id="buyGoods">
+				<div class="form-inline product-select-group">
+					<div class="form-group product-select">
+						<select name="goodsList" id="goodsList" class="form-control input-lg"></select>
+					</div>
+					<div class="form-group option-select">
+						<select name="goodsOption" id="goodsOption" class="form-control input-lg"></select>
+					</div>
+
+					<div class="form-group count-select">
+						<select name="goodsCnt" id="goodsCnt" class="form-control input-lg">
+							<option value="1">1</option>
+							<option value="1">2</option>
+							<option value="1">3</option>
+							<option value="1">4</option>
+							<option value="1">5</option>
+							<option value="1">6</option>
+							<option value="1">7</option>
+							<option value="1">8</option>
+							<option value="1">9</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group form-inline price-action-group">
+					<div class="form-group price-display">
+						<input type="hidden" name="goodsPrice" id="goodsPrice" value="0" readonly>
+						<input type="text" class="form-control text-right bg-white input-lg border-white"
+							name="viewPrice" id="viewPrice" value="0" readonly>
+					</div>
+					<div class="form-group action-buttons">
+						<button type="button" name="AddCart" id="AddCart" class="btn btn-light">Add Cart</button>
+						<button type="button" name="BuyNow" id="BuyNow" class="btn btn-light ml-2">Buy Now</button>
+					</div>
+				</div>
+			</form>
+		</div>
+		<!-- 화면 하단에 따라다니는 주문 진행 창 끝 -->
+
+		<!-- 장바구니 modal -->
+		<div class="modal fade" id="cartModal" role="dialog">
+			<div class="modal-dialog  modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 style="color:red;"><span class="bi bi-cart2"></span> Cart</h4>
+						<button type="button" class="close" data-dismiss="modal"><i class="bi bi-x-circle text-danger"
+								style="font-size: 1.8rem; font-weight: 900;"></i></button>
+					</div>
+					<div class="modal-body" id="cartBody">
+					</div>
+					<div class="modal-footer">
+						<div class="alert alert-danger"><small>If you want to purchase as a member, please log
+								in.</small>
+						</div><button type="button" class="btn btn-primary ml-3" id="noneBuy">Guest checkout</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 장바구니 modal 끝 -->
+
+		<!-- 로그인 modal -->
+		<div class="modal fade" id="loginModal" role="dialog">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content border-0 shadow-lg" style="border-radius: 15px; overflow: hidden;">
+					<div class="modal-header border-0 pb-0 justify-content-center position-relative">
+						<h4 class="modal-title font-weight-bold" style="color: #2E1A47;"><i
+								class="bi bi-box-arrow-in-right mr-2"></i>Login</h4>
+						<button type="button" class="close position-absolute" data-dismiss="modal"
+							style="right: 20px; top: 20px; opacity: 0.5;">
+							<i class="bi bi-x-lg" style="font-size: 1.2rem;"></i>
+						</button>
+					</div>
+					<div class="modal-body pt-4 px-5">
+						<!-- Google Sign-In Button -->
+						<button type="button" class="btn btn-block py-3 mb-4" id="googleLoginBtn"
+							onclick="googleLogin()"
+							style="background-color: #fff; border: 2px solid #ddd; border-radius: 10px; font-weight: 600; color: #333; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;">
+							<svg width="20" height="20" viewBox="0 0 48 48">
+								<path fill="#EA4335"
+									d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+								<path fill="#4285F4"
+									d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+								<path fill="#FBBC05"
+									d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+								<path fill="#34A853"
+									d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+							</svg>
+							Google로 로그인
+						</button>
+
+						<!-- Divider -->
+						<div class="d-flex align-items-center mb-4">
+							<hr style="flex: 1; border-color: #eee;">
+							<span class="px-3 text-muted small">또는 이메일로 로그인</span>
+							<hr style="flex: 1; border-color: #eee;">
+						</div>
+
+						<form id="emailLoginForm">
+							<div class="form-group mb-4">
+								<label class="text-muted small font-weight-bold ml-1">EMAIL</label>
+								<input type="email"
+									class="form-control border-top-0 border-left-0 border-right-0 rounded-0 px-0 shadow-none bg-transparent"
+									style="border-bottom: 2px solid #eee; height: 50px;" placeholder="your@email.com"
+									name="loginEmail" id="loginEmail">
+							</div>
+							<div class="form-group mb-4">
+								<label class="text-muted small font-weight-bold ml-1">PASSWORD</label>
+								<input type="password"
+									class="form-control border-top-0 border-left-0 border-right-0 rounded-0 px-0 shadow-none bg-transparent"
+									style="border-bottom: 2px solid #eee; height: 50px;"
+									placeholder="Enter your Password" name="loginPassword" id="loginPassword">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer flex-column border-0 px-5 pb-5">
+						<button type="button" class="btn btn-block text-white font-weight-bold py-3 mb-3"
+							id="emailLoginBtn" onclick="emailLogin()"
+							style="background-color: #2E1A47; border-radius: 10px; transition: all 0.3s; box-shadow: 0 4px 6px rgba(46, 26, 71, 0.2);">
+							Login
+						</button>
+						<div class="text-center w-100 d-flex justify-content-between px-2">
+							<a href="#" class="text-muted small" onclick="resetPassword(); return false;">비밀번호 재설정</a>
+							<span class="text-muted small">|</span>
+							<a href="#" class="text-muted small font-weight-bold" style="color: #2E1A47;"
+								data-dismiss="modal" data-toggle="modal" data-target="#joinModal">Sign Up</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 로그인 modal 끝 -->
+
+		<!-- 회원가입 modal -->
+		<div class="modal fade" id="joinModal" role="dialog">
+			<div class="modal-dialog modal-dialog-centered modal-lg">
+				<div class="modal-content border-0 shadow-lg" style="border-radius: 15px; overflow: hidden;">
+					<div class="modal-header border-0 pb-0 justify-content-center position-relative">
+						<h4 class="modal-title font-weight-bold" style="color: #2E1A47;"><i
+								class="bi bi-person-plus mr-2"></i>Sign Up</h4>
+						<button type="button" class="close position-absolute" data-dismiss="modal"
+							style="right: 20px; top: 20px; opacity: 0.5;">
+							<i class="bi bi-x-lg" style="font-size: 1.2rem;"></i>
+						</button>
+					</div>
+					<div class="modal-body pt-4 px-5" id="joinBody">
+						<form id="joinForm">
+							<div class="row">
+								<div class="col-md-6">
+									<h6 class="text-muted font-weight-bold mb-3 small">ACCOUNT INFO</h6>
+									<div class="form-group mb-3">
+										<div class="input-group">
+											<input type="text"
+												class="form-control border-top-0 border-left-0 border-right-0 rounded-0 px-0 shadow-none bg-transparent"
+												placeholder="Email (required)" name="joinuserid" id="joinuserid"
+												required style="border-bottom: 2px solid #eee; height: 45px;">
+											<div class="input-group-append">
+												<button class="btn btn-sm font-weight-bold" type="button"
+													id="checkEmail"
+													style="color: #2E1A47; border-bottom: 2px solid #eee; border-radius: 0;">Check</button>
+											</div>
+										</div>
+									</div>
+									<div class="form-group mb-3">
+										<input type="password"
+											class="form-control border-top-0 border-left-0 border-right-0 rounded-0 px-0 shadow-none bg-transparent"
+											placeholder="Password (required)" name="joinuserpw" id="joinuserpw"
+											oninput="requiredText(this);"
+											style="border-bottom: 2px solid #eee; height: 45px;">
+									</div>
+									<div class="form-group mb-4">
+										<input type="password"
+											class="form-control border-top-0 border-left-0 border-right-0 rounded-0 px-0 shadow-none bg-transparent"
+											placeholder="Confirm Password (required)" name="joinuserpwconfirm"
+											id="joinuserpwconfirm" oninput="joinPassConfirm(this);"
+											onfocus="joinCheckPass();"
+											style="border-bottom: 2px solid #eee; height: 45px;">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<h6 class="text-muted font-weight-bold mb-3 small">PERSONAL INFO</h6>
+									<div class="form-group mb-3">
+										<input type="text"
+											class="form-control border-top-0 border-left-0 border-right-0 rounded-0 px-0 shadow-none bg-transparent"
+											placeholder="User Name (required)" name="joinusername" id="joinusername"
+											oninput="alphabetOnInput(this); requiredText(this);"
+											style="border-bottom: 2px solid #eee; height: 45px;">
+									</div>
+									<div class="form-group mb-3">
+										<input type="tel"
+											class="form-control border-top-0 border-left-0 border-right-0 rounded-0 px-0 shadow-none bg-transparent"
+											placeholder="Phone Number (required)" name="joinusertel" id="joinusertel"
+											oninput="numberOnInput(this); requiredText(this);"
+											style="border-bottom: 2px solid #eee; height: 45px;">
+									</div>
+									<div class="form-group mb-3">
+										<input type="text"
+											class="form-control border-top-0 border-left-0 border-right-0 rounded-0 px-0 shadow-none bg-transparent"
+											placeholder="Country" name="joinusercountry" id="joinusercountry"
+											oninput="alphabetOnInput(this);"
+											style="border-bottom: 2px solid #eee; height: 45px;">
+									</div>
+								</div>
+							</div>
+							<!-- 다이어트 관심 분야 -->
+							<h6 class="text-muted font-weight-bold mb-3 mt-2 small"><i
+									class="bi bi-heart-pulse mr-1"></i>DIET INTEREST</h6>
+							<div class="row mb-3">
+								<div class="col-12">
+									<div class="form-group mb-3">
+										<select class="form-control bg-transparent rounded-0 px-0 shadow-none"
+											name="joindietinterest" id="joindietinterest"
+											style="border: none; border-bottom: 2px solid #eee; height: 45px; color: #666;">
+											<option value="" disabled selected>관심 분야를 선택해주세요</option>
+											<option value="체중감량">체중 감량 (Weight Loss)</option>
+											<option value="디톡스">디톡스 / 클렌즈 (Detox / Cleanse)</option>
+											<option value="근력강화">근력 강화 (Muscle Building)</option>
+											<option value="건강식단">건강 식단 관리 (Healthy Diet)</option>
+											<option value="소화개선">소화 개선 (Digestive Health)</option>
+											<option value="피부미용">피부 미용 (Skin Care & Beauty)</option>
+											<option value="간건강">간 건강 (Liver Health)</option>
+											<option value="기타">기타 (Other)</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<h6 class="text-muted font-weight-bold mb-3 mt-2 small">ADDRESS (Optional)</h6>
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group mb-3">
+										<input type="text"
+											class="form-control border-top-0 border-left-0 border-right-0 rounded-0 px-0 shadow-none bg-transparent"
+											placeholder="State" name="joinuserstate" id="joinuserstate"
+											oninput="alphabetOnInput(this);"
+											style="border-bottom: 2px solid #eee; height: 45px;">
+									</div>
+									<div class="form-group mb-3">
+										<input type="tel"
+											class="form-control border-top-0 border-left-0 border-right-0 rounded-0 px-0 shadow-none bg-transparent"
+											placeholder="Post Code" name="joinuserpost" id="joinuserpost"
+											oninput="numberOnInput(this);"
+											style="border-bottom: 2px solid #eee; height: 45px;">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group mb-3">
+										<input type="text"
+											class="form-control border-top-0 border-left-0 border-right-0 rounded-0 px-0 shadow-none bg-transparent"
+											placeholder="Address" name="joinuseraddr1" id="joinuseraddr1"
+											oninput="alphabetOnInput(this);"
+											style="border-bottom: 2px solid #eee; height: 45px;">
+									</div>
+									<div class="form-group mb-3">
+										<input type="text"
+											class="form-control border-top-0 border-left-0 border-right-0 rounded-0 px-0 shadow-none bg-transparent"
+											placeholder="Detailed Address" name="joinuseraddr2" id="joinuseraddr2"
+											oninput="alphabetOnInput(this);"
+											style="border-bottom: 2px solid #eee; height: 45px;">
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer border-0 px-5 pb-5">
+						<button type="button" name="joinConfirm" id="joinConfirm" onclick="emailSignUp()"
+							class="btn btn-block text-white font-weight-bold py-3"
+							style="background-color: #2E1A47; border-radius: 10px; transition: all 0.3s; box-shadow: 0 4px 6px rgba(46, 26, 71, 0.2);">
+							Create Account
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 회원가입 modal 끝 -->
+
+		<!-- 회원정보 modal -->
+		<div class="modal fade" id="infoModal" role="dialog">
+			<div class="modal-dialog  modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 style="color:red;"><span class="bi bi-person-check"></span> MyInfo</h4>
+						<button type="button" class="close" data-dismiss="modal"><i class="bi bi-x-circle"
+								style="font-size: 1.8rem; font-weight: 900; color: red;"></i></button>
+					</div>
+					<div class="modal-body" id="infoBody">
+						<form id="modifyForm">
+							<div class="form-group">
+								<input type="password" class="form-control border-danger"
+									placeholder="Password (Enter when changing)" name="modifypw" id="modifypw"
+									oninput="requiredText(this);">
+							</div>
+							<div class="form-group">
+								<input type="password" class="form-control border-danger"
+									placeholder="Password Confirm (Enter when changing)" name="modifypwconfirm"
+									id="modifypwconfirm" oninput="modifyPassConfirm(this);"
+									onfocus="modifyCheckPass();">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" value="" name="modifyname" id="modifyname"
+									readonly>
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" value="" placeholder="Country"
+									name="modifycountry" id="modifycountry" oninput="alphabetOnInput(this);">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" value="" placeholder="State" name="modifystate"
+									id="modifystate" oninput="alphabetOnInput(this);">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" value="" placeholder="Address"
+									name="modifyaddr1" id="modifyaddr1" oninput="alphabetOnInput(this);">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" value="" placeholder="Detailed Address"
+									name="modifyaddr2" id="modifyaddr2" oninput="alphabetOnInput(this);">
+							</div>
+							<div class="form-group">
+								<input type="tel" class="form-control" value="" placeholder="Post" name="modifypost"
+									id="modifypost" oninput="numberOnInput(this);">
+							</div>
+							<div class="form-group">
+								<input type="tel" class="form-control border-success" value=""
+									placeholder="Phone Number (required)" name="modifytel" id="modifytel"
+									oninput="numberOnInput(this); requiredText(this);">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" name="joinConfirm" id="modifyConfirm"
+							class="btn btn-primary btn-block">Modify</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 회원정보 modal 끝 -->
+
+		<!-- 주문목록 modal -->
+		<div class="modal fade" id="orderModal" role="dialog">
+			<div class="modal-dialog  modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 style="color:red;"><span class="bi bi-list-check"></span> Order List</h4>
+						<button type="button" class="close" data-dismiss="modal"><i class="bi bi-x-circle"
+								style="font-size: 1.8rem; font-weight: 900; color: red;"></i></button>
+					</div>
+					<div class="modal-body" id="orderBody">
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 주문목록 modal 끝 -->
+
+		<!-- 장바구니 등록 modal -->
+		<div class="modal fade" id="successModal" role="dialog">
+			<div class="modal-dialog  modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 style="color:primary;"><span class="bi bi-cart2"></span> Cart</h4>
+						<button type="button" class="close" data-dismiss="modal"><i class="bi bi-x-circle"
+								style="font-size: 1.8rem; font-weight: 900; color: red;"></i></button>
+					</div>
+					<div class="modal-body">
+						The selected item has been added to your cart.
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" id="cartList3">Show Cart</button>
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Continue Shopping</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 장바구니 등록 modal 끝 -->
+
+		<!-- 구매 modal -->
+		<div class="modal fade" id="buyModal" role="dialog">
+			<div class="modal-dialog  modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 style="color:red;"><span class="bi bi-info-circle"></span> Recipient Information</h4>
+						<button type="button" class="close" data-dismiss="modal"><i class="bi bi-x-circle"
+								style="font-size: 1.8rem; font-weight: 900; color: red;"></i></button>
+					</div>
+					<div class="modal-body" id="buyBody">
+						<form id="buyForm">
+							<input type="hidden" class="form-control border-danger" name="payKind" id="payKind"
+								value="none">
+							<div class="form-group">
+								<input type="password" class="form-control border-danger" placeholder="Password"
+									name="orderpw" id="orderpw" oninput="requiredText(this);">
+							</div>
+							<div class="form-group">
+								<input type="password" class="form-control border-danger" placeholder="Password Confirm"
+									name="orderpwconfirm" id="orderpwconfirm" oninput="orderPassConfirm(this);"
+									onfocus="orderCheckPass();">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Recipient Email" name="orderEmail"
+									id="orderEmail">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control border-danger" placeholder="Recipient Name"
+									name="ordername" id="ordername"
+									oninput="alphabetOnInput(this); requiredText(this);">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control border-success" placeholder="Singapore"
+									name="ordercountry" id="ordercountry" oninput="alphabetOnInput(this);"
+									value="Singapore" readonly>
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control border-danger" placeholder="Recipient Region"
+									name="orderstate" id="orderstate"
+									oninput="alphabetOnInput(this); requiredText(this);">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control border-danger"
+									placeholder="Recipient City & Area" name="orderaddr1" id="orderaddr1"
+									oninput="alphabetOnInput(this); requiredText(this);">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control border-danger"
+									placeholder="Recipient Detailed Address" name="orderaddr2" id="orderaddr2"
+									oninput="alphabetOnInput(this); requiredText(this);">
+							</div>
+							<div class="form-group">
+								<input type="tel" class="form-control border-danger" placeholder="Recipient Postcode"
+									name="orderpost" id="orderpost" oninput="numberOnInput(this); requiredText(this);">
+							</div>
+							<div class="form-group">
+								<input type="tel" class="form-control border-danger"
+									placeholder="Recipient Phone Number" name="ordertel" id="ordertel"
+									oninput="numberOnInput(this); requiredText(this);">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" id="pay1">Account Transfer</button>
+						<!-- 
+					<button type="button" class="btn btn-secondary" id="pay2" disabled>Pay Pal</button>
+					<button type="button" class="btn btn-secondary" id="pay3" disabled>Stripe</button>
+					<button type="button" class="btn btn-secondary" id="pay4" disabled>Opn Payments</button>
+					<button type="button" class="btn btn-secondary" id="pay5" disabled>Adyen</button>
+					<button type="button" class="btn btn-secondary" id="pay6" disabled>Choco Payment</button>
+-->
+						<button type="button" class="btn btn-secondary" id="pay7">On-site payment</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 구매 modal 끝 -->
+
+		<!-- 비회원 order list 정보 입력 modal -->
+		<div class="modal fade" id="orderListInputModal" role="dialog">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content border-0 shadow-lg" style="border-radius: 15px; overflow: hidden;">
+					<div class="modal-header border-0 pb-0 justify-content-center position-relative">
+						<h4 class="modal-title font-weight-bold" style="color: #2E1A47;"><i
+								class="bi bi-list-check mr-2"></i>Order Info</h4>
+						<button type="button" class="close position-absolute" data-dismiss="modal"
+							style="right: 20px; top: 20px; opacity: 0.5;">
+							<i class="bi bi-x-lg" style="font-size: 1.2rem;"></i>
+						</button>
+					</div>
+					<div class="modal-body pt-4 px-4" id="orderListInputBody">
+						<form id="orderListInputForm">
+							<div class="form-group mb-4">
+								<label class="text-muted small font-weight-bold ml-1">RECIPIENT INFO</label>
+								<input type="text"
+									class="form-control border-top-0 border-left-0 border-right-0 rounded-0 px-0 shadow-none bg-transparent"
+									style="border-bottom: 2px solid #eee; height: 50px;"
+									placeholder="Recipient Email, Name, or Phone Number" name="orderValue"
+									id="orderValue">
+							</div>
+							<div class="form-group mb-4">
+								<label class="text-muted small font-weight-bold ml-1">PASSWORD</label>
+								<input type="password"
+									class="form-control border-top-0 border-left-0 border-right-0 rounded-0 px-0 shadow-none bg-transparent"
+									style="border-bottom: 2px solid #eee; height: 50px;" placeholder="Password"
+									name="orderListPw" id="orderListPw">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer border-0 px-4 pb-4">
+						<button type="button" name="orderListConfirm" id="orderListConfirm"
+							class="btn btn-block text-white font-weight-bold py-3"
+							style="background-color: #2E1A47; border-radius: 10px; transition: all 0.3s;">
+							Confirm Order
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 비회원 order list 정보 입력 modal 끝 -->
+
+		<!-- 계좌송금을 위한 정보 및 입금자명 입력 modal -->
+		<div class="modal fade" id="pay1Modal" role="dialog">
+			<div class="modal-dialog  modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 style="color:red;"><span class="bi bi-list-check"></span> Account Transfer</h4>
+					</div>
+					<div class="modal-body" id="pay1Body">
+						<form id="pay1InputForm">
+							<div class="form-group">
+								Bank Name is <span class="text-warning font-weight-bold" style="font-size:1.25rem">KEB
+									Hana
+									Bank</span><br>
+								Bank SWIFT CODE is <span class="text-warning font-weight-bold"
+									style="font-size:1.25rem">KOEXKRSE</span><br>
+								Bank Address is <span class="text-warning font-weight-bold"
+									style="font-size:1.25rem">501
+									Hakdong-ro, Gangnam-gu, Seoul, Republic of Korea</span><br>
+								Account number is <span class="text-warning font-weight-bold"
+									style="font-size:1.25rem">210-910021-87638</span><br>
+								Beneficiary is <span class="text-warning font-weight-bold"
+									style="font-size:1.25rem">BANG
+									MINWOO</span><br>
+								The amount to be deposited is <span class="text-warning font-weight-bold"
+									style="font-size:1.25rem" id="pay1Price">KRW 0</span><br>
+								After making the deposit, please enter the depositor’s name for verification.
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control border-danger" placeholder="Depositor Name"
+									name="pay1InputName" id="pay1InputName"
+									oninput="alphabetOnInput(this); requiredText(this);">
+							</div>
+							<div class="form-group">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" name="pay1Confirm" id="pay1Confirm"
+							class="btn btn-primary btn-block">Depositor Confirm</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 계좌송금을 위한 정보 및 입금자명 입력 modal 끝 -->
+
+		<!-- 현장결제를 위한 관리자 비번 입력 modal -->
+		<div class="modal fade" id="pay7Modal" role="dialog">
+			<div class="modal-dialog  modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 style="color:red;"><span class="bi bi-list-check"></span> On-site payment</h4>
+					</div>
+					<div class="modal-body" id="pay7Body">
+						<form id="pay7InputForm">
+							<div class="form-group">
+								Please show this to the person in charge of payment and proceed with the payment.
+							</div>
+							<div class="form-group">
+								<input type="password" class="form-control" placeholder="Payment Password" name="paypw"
+									id="paypw">
+							</div>
+							<div class="form-group">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" name="pay7Confirm" id="pay7Confirm"
+							class="btn btn-primary btn-block">Payment
+							Confirm</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 현장결제를 위한 관리자 비번 입력 modal 끝 -->
+
+		<!-- My Page Modal -->
+		<div class="modal fade" id="myPageModal" role="dialog">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content border-0 shadow-lg" style="border-radius: 15px; overflow: hidden;">
+					<div class="modal-header border-0 pb-0 justify-content-center position-relative"
+						style="background: linear-gradient(135deg, #2E1A47, #5a3d7a); padding: 30px 20px;">
+						<div class="text-center text-white">
+							<div id="myPageAvatar"
+								style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.2); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
+								<i class="bi bi-person-fill"></i>
+							</div>
+							<h5 class="font-weight-bold mb-1" id="myPageName">User</h5>
+							<p class="small mb-0" id="myPageEmail" style="opacity: 0.8;">user@email.com</p>
+						</div>
+						<button type="button" class="close position-absolute text-white" data-dismiss="modal"
+							style="right: 20px; top: 20px; opacity: 0.7;">
+							<i class="bi bi-x-lg" style="font-size: 1.2rem;"></i>
+						</button>
+					</div>
+					<div class="modal-body px-5 py-4">
+						<div class="list-group list-group-flush">
+							<a href="#" class="list-group-item list-group-item-action border-0 px-0 py-3"
+								data-toggle="modal" data-target="#orderListModal" data-dismiss="modal">
+								<i class="bi bi-bag mr-2" style="color: #2E1A47;"></i> Order History
+							</a>
+							<a href="#" class="list-group-item list-group-item-action border-0 px-0 py-3"
+								data-toggle="modal" data-target="#infoModal" data-dismiss="modal">
+								<i class="bi bi-gear mr-2" style="color: #2E1A47;"></i> Account Settings
+							</a>
+							<div class="list-group-item border-0 px-0 py-3" id="myPageDietInfo" style="color: #666;">
+								<i class="bi bi-heart-pulse mr-2" style="color: #2E1A47;"></i> Diet Interest: <span
+									id="myPageDiet">-</span>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer border-0 px-5 pb-4">
+						<button type="button" class="btn btn-block py-3 font-weight-bold" onclick="firebaseLogout()"
+							data-dismiss="modal" style="background-color: #f5f5f5; border-radius: 10px; color: #333;">
+							<i class="bi bi-box-arrow-right mr-2"></i>Logout
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- My Page Modal End -->
+
+	</div><!-- wrapper end -->
+
+	<!-- Firebase Auth Script -->
+	<script>
+		// Firebase Configuration
+		const firebaseConfig = {
+			apiKey: "AIzaSyD97GJmxLM9PTN7rXPYDoXsqx5H12EbYGg",
+			authDomain: "daeatshop-project.firebaseapp.com",
+			projectId: "daeatshop-project",
+			storageBucket: "daeatshop-project.firebasestorage.app",
+			messagingSenderId: "448904594769",
+			appId: "1:448904594769:web:5dccdc2dccb075e0c93f70",
+			measurementId: "G-G1GM76C1M0"
+		};
+
+		// Initialize Firebase
+		firebase.initializeApp(firebaseConfig);
+		const auth = firebase.auth();
+		const db = firebase.firestore();
+
+		// ========== AUTH STATE OBSERVER ==========
+		auth.onAuthStateChanged(function (user) {
+			if (user) {
+				// User is signed in
+				console.log('Logged in:', user.email || user.displayName);
+				$('#navLoginBtn').hide();
+				$('#navJoinBtn').hide();
+				$('#navUserName').show();
+				$('#navMyPageBtn').show();
+				$('#navLogoutBtn').show();
+
+				// Show username in header
+				var displayName = user.displayName || user.email.split('@')[0] || 'User';
+				$('#headerUserName').text(displayName + '님');
+
+				// Update My Page info
+				$('#myPageName').text(displayName);
+				$('#myPageEmail').text(user.email || '');
+
+				// If user has a photo (Google), show it
+				if (user.photoURL) {
+					$('#myPageAvatar').html('<img src="' + user.photoURL + '" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">');
+				}
+
+				// Load additional user data from Firestore
+				db.collection('users').doc(user.uid).get().then(function (doc) {
+					if (doc.exists) {
+						var data = doc.data();
+						if (data.dietInterest) {
+							$('#myPageDiet').text(data.dietInterest);
+						}
+						if (data.name) {
+							$('#myPageName').text(data.name);
+							$('#headerUserName').text(data.name + '님');
+						}
+					}
+				}).catch(function (err) {
+					console.log('Firestore read error:', err);
+				});
+
+			} else {
+				// User is signed out
+				console.log('Logged out');
+				$('#navLoginBtn').show();
+				$('#navJoinBtn').show();
+				$('#navUserName').hide();
+				$('#navMyPageBtn').hide();
+				$('#navLogoutBtn').hide();
+
+				// Reset My Page
+				$('#myPageName').text('User');
+				$('#myPageEmail').text('');
+				$('#myPageDiet').text('-');
+				$('#headerUserName').text('User');
+				$('#myPageAvatar').html('<i class="bi bi-person-fill"></i>');
+			}
+		});
+
+		// ========== GOOGLE LOGIN ==========
+		function googleLogin() {
+			var provider = new firebase.auth.GoogleAuthProvider();
+			auth.signInWithPopup(provider)
+				.then(function (result) {
+					var user = result.user;
+					// Save user info to Firestore (merge to not overwrite)
+					db.collection('users').doc(user.uid).set({
+						name: user.displayName || '',
+						email: user.email || '',
+						photoURL: user.photoURL || '',
+						loginMethod: 'google',
+						lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+					}, { merge: true });
+
+					$('#loginModal').modal('hide');
+					alert('환영합니다, ' + (user.displayName || user.email) + '님!');
+				})
+				.catch(function (error) {
+					console.error('Google login error:', error);
+					alert('Google 로그인 실패: ' + error.message);
+				});
+		}
+
+		// ========== EMAIL LOGIN ==========
+		function emailLogin() {
+			var email = $('#loginEmail').val();
+			var password = $('#loginPassword').val();
+
+			if (!email || !password) {
+				alert('이메일과 비밀번호를 입력해주세요.');
+				return;
+			}
+
+			auth.signInWithEmailAndPassword(email, password)
+				.then(function (result) {
+					$('#loginModal').modal('hide');
+					alert('로그인 성공! 환영합니다.');
+				})
+				.catch(function (error) {
+					console.error('Email login error:', error);
+					var msg = '로그인 실패: ';
+					if (error.code === 'auth/user-not-found') msg += '등록되지 않은 이메일입니다.';
+					else if (error.code === 'auth/wrong-password') msg += '비밀번호가 틀렸습니다.';
+					else if (error.code === 'auth/invalid-email') msg += '이메일 형식이 올바르지 않습니다.';
+					else msg += error.message;
+					alert(msg);
+				});
+		}
+
+		// ========== EMAIL SIGNUP ==========
+		function emailSignUp() {
+			var email = $('#joinuserid').val();
+			var password = $('#joinuserpw').val();
+			var confirmPw = $('#joinuserpwconfirm').val();
+			var name = $('#joinusername').val();
+			var phone = $('#joinusertel').val();
+			var country = $('#joinusercountry').val();
+			var dietInterest = $('#joindietinterest').val();
+
+			// Validation
+			if (!email || !password || !name || !phone) {
+				alert('필수 항목을 모두 입력해주세요. (이메일, 비밀번호, 이름, 전화번호)');
+				return;
+			}
+			if (password !== confirmPw) {
+				alert('비밀번호가 일치하지 않습니다.');
+				return;
+			}
+			if (password.length < 6) {
+				alert('비밀번호는 최소 6자 이상이어야 합니다.');
+				return;
+			}
+
+			auth.createUserWithEmailAndPassword(email, password)
+				.then(function (result) {
+					var user = result.user;
+
+					// Update display name
+					user.updateProfile({ displayName: name });
+
+					// Save additional user data to Firestore
+					db.collection('users').doc(user.uid).set({
+						name: name,
+						email: email,
+						phone: phone,
+						country: country || '',
+						dietInterest: dietInterest || '',
+						address: {
+							state: $('#joinuserstate').val() || '',
+							postCode: $('#joinuserpost').val() || '',
+							addr1: $('#joinuseraddr1').val() || '',
+							addr2: $('#joinuseraddr2').val() || ''
+						},
+						loginMethod: 'email',
+						createdAt: firebase.firestore.FieldValue.serverTimestamp()
+					});
+
+					$('#joinModal').modal('hide');
+					alert('회원가입이 완료되었습니다! 환영합니다, ' + name + '님!');
+				})
+				.catch(function (error) {
+					console.error('Signup error:', error);
+					var msg = '회원가입 실패: ';
+					if (error.code === 'auth/email-already-in-use') msg += '이미 사용 중인 이메일입니다.';
+					else if (error.code === 'auth/weak-password') msg += '비밀번호가 너무 약합니다. (최소 6자)';
+					else if (error.code === 'auth/invalid-email') msg += '이메일 형식이 올바르지 않습니다.';
+					else msg += error.message;
+					alert(msg);
+				});
+		}
+
+		// ========== PASSWORD RESET ==========
+		function resetPassword() {
+			var email = $('#loginEmail').val();
+			if (!email) {
+				alert('이메일을 먼저 입력해주세요.');
+				$('#loginEmail').focus();
+				return;
+			}
+			auth.sendPasswordResetEmail(email)
+				.then(function () {
+					alert('비밀번호 재설정 이메일을 보냈습니다. 메일함을 확인해주세요.');
+				})
+				.catch(function (error) {
+					console.error('Password reset error:', error);
+					alert('비밀번호 재설정 실패: ' + error.message);
+				});
+		}
+
+		// ========== LOGOUT ==========
+		function firebaseLogout() {
+			auth.signOut()
+				.then(function () {
+					alert('로그아웃 되었습니다.');
+				})
+				.catch(function (error) {
+					console.error('Logout error:', error);
+				});
+		}
+	</script>
+
+</body>
+
+</html>
